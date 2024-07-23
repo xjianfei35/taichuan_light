@@ -47,7 +47,7 @@ PROTOCOLS = {1: "V1", 2: "V2", 3: "V3"}
 STORAGE_PATH = f".storage/{DOMAIN}"
 
 SERVERS = {
-    1: "MSmartHome",
+    1: "珠海U家",
     2: "美的美居",
     3: "Taichuan Air",
     4: "NetHome Plus",
