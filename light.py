@@ -9,9 +9,9 @@ from .const import (
     DOMAIN,
     DEVICES
 )
-from .midea.devices.x13.device import DeviceAttributes as X13Attributes
-from .midea_entity import MideaEntity
-from .midea_devices import MIDEA_DEVICES
+from .taichuan.devices.x13.device import DeviceAttributes as X13Attributes
+from .taichuan_entity import TaichuanEntity
+from .taichuan_devices import TAICHUAN_DEVICES
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -23,13 +23,13 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
         CONF_SWITCHES, []
     )
     devs = []
-    for entity_key, config in MIDEA_DEVICES[device.device_type]["entities"].items():
+    for entity_key, config in TAICHUAN_DEVICES[device.device_type]["entities"].items():
         if config["type"] == Platform.LIGHT and (config.get("default") or entity_key in extra_switches):
-            devs.append(MideaLight(device, entity_key))
+            devs.append(TaichuanLight(device, entity_key))
     async_add_entities(devs)
 
 
-class MideaLight(MideaEntity, LightEntity):
+class TaichuanLight(TaichuanEntity, LightEntity):
     def __init__(self, device, entity_key):
         super().__init__(device, entity_key)
 

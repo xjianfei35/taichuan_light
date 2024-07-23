@@ -1,5 +1,5 @@
-from .midea_entity import MideaEntity
-from .midea_devices import MIDEA_DEVICES
+from .taichuan_entity import TaichuanEntity
+from .taichuan_devices import TAICHUAN_DEVICES
 from homeassistant.components.lock import LockEntity
 from homeassistant.const import (
     Platform,
@@ -19,14 +19,14 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
         CONF_SWITCHES, []
     )
     locks = []
-    for entity_key, config in MIDEA_DEVICES[device.device_type]["entities"].items():
+    for entity_key, config in TAICHUAN_DEVICES[device.device_type]["entities"].items():
         if config["type"] == Platform.LOCK and entity_key in extra_switches:
-            dev = MideaLock(device, entity_key)
+            dev = TaichuanLock(device, entity_key)
             locks.append(dev)
     async_add_entities(locks)
 
 
-class MideaLock(MideaEntity, LockEntity):
+class TaichuanLock(TaichuanEntity, LockEntity):
 
     @property
     def is_locked(self):

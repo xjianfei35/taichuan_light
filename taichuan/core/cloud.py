@@ -18,7 +18,7 @@ clouds = {
         "login_key": "ad0ee21d48a64bf49f4fb583ab76e799",
         "iot_key": bytes.fromhex(format(9795516279659324117647275084689641883661667, 'x')).decode(),
         "hmac_key": bytes.fromhex(format(117390035944627627450677220413733956185864939010425, 'x')).decode(),
-        "api_url": "https://mp-prod.smartmidea.net/mas/v5/app/proxy?alias=",
+        "api_url": "https://mp-prod.smarttaichuan.net/mas/v5/app/proxy?alias=",
     },
     "MSmartHome": {
         "class_name": "MSmartHomeCloud",
@@ -635,7 +635,7 @@ class MideaAirCloud(MideaCloud):
         return None
 
 
-def get_midea_cloud(cloud_name: str, session: ClientSession, account: str, password: str) -> MideaCloud | None:
+def get_taichuan_cloud(cloud_name: str, session: ClientSession, account: str, password: str) -> MideaCloud | None:
     cloud = None
     if cloud_name in clouds.keys():
         cloud = globals()[clouds[cloud_name]["class_name"]](

@@ -9,8 +9,8 @@ from .const import (
     DOMAIN,
     DEVICES,
 )
-from .midea_devices import MIDEA_DEVICES
-from .midea_entity import MideaEntity
+from .taichuan_devices import TAICHUAN_DEVICES
+from .taichuan_entity import TaichuanEntity
 
 import logging
 _LOGGER = logging.getLogger(__name__)
@@ -23,16 +23,16 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
         CONF_SWITCHES, []
     )
     devs = []
-    for entity_key, config in MIDEA_DEVICES[device.device_type]["entities"].items():
+    for entity_key, config in TAICHUAN_DEVICES[device.device_type]["entities"].items():
         if config["type"] == Platform.HUMIDIFIER and (config.get("default") or entity_key in extra_switches):
             if device.device_type == 0xA1:
-                devs.append(MideaA1Humidifier(device, entity_key))
+                devs.append(TaichuanA1Humidifier(device, entity_key))
             if device.device_type == 0xFD:
-                devs.append(MideaFDHumidifier(device, entity_key))
+                devs.append(TaichuanFDHumidifier(device, entity_key))
     async_add_entities(devs)
 
 
-class MideaHumidifier(MideaEntity, HumidifierEntity):
+class TaichuanHumidifier(TaichuanEntity, HumidifierEntity):
     def __init__(self, device, entity_key):
         super().__init__(device, entity_key)
 
@@ -79,7 +79,7 @@ class MideaHumidifier(MideaEntity, HumidifierEntity):
             _LOGGER.debug(f"Entity {self.entity_id} update_state {repr(e)}, status = {status}")
 
 
-class MideaA1Humidifier(MideaHumidifier):
+class TaichuanA1Humidifier(TaichuanHumidifier):
     def __init__(self, device, entity_key):
         super().__init__(device, entity_key)
         self._min_humidity = 35
@@ -94,7 +94,7 @@ class MideaA1Humidifier(MideaHumidifier):
         return HumidifierEntityFeature.MODES
 
 
-class MideaFDHumidifier(MideaHumidifier):
+class TaichuanFDHumidifier(TaichuanHumidifier):
     def __init__(self, device, entity_key):
         super().__init__(device, entity_key)
         self._min_humidity = 35

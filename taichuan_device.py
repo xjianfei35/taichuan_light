@@ -14,42 +14,42 @@ from homeassistant.const import (
 )
 from homeassistant.components.binary_sensor import BinarySensorDeviceClass
 from homeassistant.components.sensor import SensorStateClass, SensorDeviceClass
-from .midea.devices.x26.device import DeviceAttributes as X26Attributes
-from .midea.devices.x34.device import DeviceAttributes as X34Attributes
-from .midea.devices.x40.device import DeviceAttributes as X40Attributes
-from .midea.devices.a1.device import DeviceAttributes as A1Attributes
-from .midea.devices.ac.device import DeviceAttributes as ACAttributes
-from .midea.devices.b0.device import DeviceAttributes as B0Attributes
-from .midea.devices.b1.device import DeviceAttributes as B1Attributes
-from .midea.devices.b3.device import DeviceAttributes as B3Attributes
-from .midea.devices.b4.device import DeviceAttributes as B4Attributes
-from .midea.devices.b6.device import DeviceAttributes as B6Attributes
-from .midea.devices.bf.device import DeviceAttributes as BFAttributes
-from .midea.devices.c2.device import DeviceAttributes as C2Attributes
-from .midea.devices.c3.device import DeviceAttributes as C3Attributes
-from .midea.devices.ca.device import DeviceAttributes as CAAttributes
-from .midea.devices.cc.device import DeviceAttributes as CCAttributes
-from .midea.devices.cd.device import DeviceAttributes as CDAttributes
-from .midea.devices.ce.device import DeviceAttributes as CEAttributes
-from .midea.devices.cf.device import DeviceAttributes as CFAttributes
-from .midea.devices.da.device import DeviceAttributes as DAAttributes
-from .midea.devices.db.device import DeviceAttributes as DBAttributes
-from .midea.devices.dc.device import DeviceAttributes as DCAttributes
-from .midea.devices.e1.device import DeviceAttributes as E1Attributes
-from .midea.devices.e2.device import DeviceAttributes as E2Attributes
-from .midea.devices.e3.device import DeviceAttributes as E3Attributes
-from .midea.devices.e6.device import DeviceAttributes as E6Attributes
-from .midea.devices.e8.device import DeviceAttributes as E8Attributes
-from .midea.devices.ea.device import DeviceAttributes as EAAttributes
-from .midea.devices.ec.device import DeviceAttributes as ECAttributes
-from .midea.devices.ed.device import DeviceAttributes as EDAttributes
-from .midea.devices.fa.device import DeviceAttributes as FAAttributes
-from .midea.devices.fb.device import DeviceAttributes as FBAttributes
-from .midea.devices.fc.device import DeviceAttributes as FCAttributes
-from .midea.devices.fd.device import DeviceAttributes as FDAttributes
+from .taichuan.devices.x26.device import DeviceAttributes as X26Attributes
+from .taichuan.devices.x34.device import DeviceAttributes as X34Attributes
+from .taichuan.devices.x40.device import DeviceAttributes as X40Attributes
+from .taichuan.devices.a1.device import DeviceAttributes as A1Attributes
+from .taichuan.devices.ac.device import DeviceAttributes as ACAttributes
+from .taichuan.devices.b0.device import DeviceAttributes as B0Attributes
+from .taichuan.devices.b1.device import DeviceAttributes as B1Attributes
+from .taichuan.devices.b3.device import DeviceAttributes as B3Attributes
+from .taichuan.devices.b4.device import DeviceAttributes as B4Attributes
+from .taichuan.devices.b6.device import DeviceAttributes as B6Attributes
+from .taichuan.devices.bf.device import DeviceAttributes as BFAttributes
+from .taichuan.devices.c2.device import DeviceAttributes as C2Attributes
+from .taichuan.devices.c3.device import DeviceAttributes as C3Attributes
+from .taichuan.devices.ca.device import DeviceAttributes as CAAttributes
+from .taichuan.devices.cc.device import DeviceAttributes as CCAttributes
+from .taichuan.devices.cd.device import DeviceAttributes as CDAttributes
+from .taichuan.devices.ce.device import DeviceAttributes as CEAttributes
+from .taichuan.devices.cf.device import DeviceAttributes as CFAttributes
+from .taichuan.devices.da.device import DeviceAttributes as DAAttributes
+from .taichuan.devices.db.device import DeviceAttributes as DBAttributes
+from .taichuan.devices.dc.device import DeviceAttributes as DCAttributes
+from .taichuan.devices.e1.device import DeviceAttributes as E1Attributes
+from .taichuan.devices.e2.device import DeviceAttributes as E2Attributes
+from .taichuan.devices.e3.device import DeviceAttributes as E3Attributes
+from .taichuan.devices.e6.device import DeviceAttributes as E6Attributes
+from .taichuan.devices.e8.device import DeviceAttributes as E8Attributes
+from .taichuan.devices.ea.device import DeviceAttributes as EAAttributes
+from .taichuan.devices.ec.device import DeviceAttributes as ECAttributes
+from .taichuan.devices.ed.device import DeviceAttributes as EDAttributes
+from .taichuan.devices.fa.device import DeviceAttributes as FAAttributes
+from .taichuan.devices.fb.device import DeviceAttributes as FBAttributes
+from .taichuan.devices.fc.device import DeviceAttributes as FCAttributes
+from .taichuan.devices.fd.device import DeviceAttributes as FDAttributes
 
 
-MIDEA_DEVICES = {
+TAICHUAN_DEVICES = {
     0x13: {
         "name": "Light",
         "entities": {

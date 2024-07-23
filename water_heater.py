@@ -15,11 +15,11 @@ from .const import (
     DOMAIN,
     DEVICES
 )
-from .midea.devices.e6.device import DeviceAttributes as E6Attributes
-from .midea.devices.c3.device import DeviceAttributes as C3Attributes
-from .midea.devices.cd.device import DeviceAttributes as CDAttributes
-from .midea_devices import MIDEA_DEVICES
-from .midea_entity import MideaEntity
+from .taichuan.devices.e6.device import DeviceAttributes as E6Attributes
+from .taichuan.devices.c3.device import DeviceAttributes as C3Attributes
+from .taichuan.devices.cd.device import DeviceAttributes as CDAttributes
+from .taichuan_devices import TAICHUAN_DEVICES
+from .taichuan_entity import TaichuanEntity
 
 import logging
 _LOGGER = logging.getLogger(__name__)
@@ -37,22 +37,22 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
         CONF_SWITCHES, []
     )
     devs = []
-    for entity_key, config in MIDEA_DEVICES[device.device_type]["entities"].items():
+    for entity_key, config in TAICHUAN_DEVICES[device.device_type]["entities"].items():
         if config["type"] == Platform.WATER_HEATER and (config.get("default") or entity_key in extra_switches):
             if device.device_type == 0xE2:
-                devs.append(MideaE2WaterHeater(device, entity_key))
+                devs.append(TaichuanE2WaterHeater(device, entity_key))
             elif device.device_type == 0xE3:
-                devs.append(MideaE3WaterHeater(device, entity_key))
+                devs.append(TaichuanE3WaterHeater(device, entity_key))
             elif device.device_type == 0xE6:
-                devs.append(MideaE6WaterHeater(device, entity_key, config["use"]))
+                devs.append(TaichuanE6WaterHeater(device, entity_key, config["use"]))
             elif device.device_type == 0xC3:
-                devs.append(MideaC3WaterHeater(device, entity_key))
+                devs.append(TaichuanC3WaterHeater(device, entity_key))
             elif device.device_type == 0xCD:
-                devs.append(MideaCDWaterHeater(device, entity_key))
+                devs.append(TaichuanCDWaterHeater(device, entity_key))
     async_add_entities(devs)
 
 
-class MideaWaterHeater(MideaEntity, WaterHeaterEntity):
+class TaichuanWaterHeater(TaichuanEntity, WaterHeaterEntity):
     def __init__(self, device, entity_key):
         super().__init__(device, entity_key)
         self._operations = []
@@ -136,7 +136,7 @@ class MideaWaterHeater(MideaEntity, WaterHeaterEntity):
             _LOGGER.debug(f"Entity {self.entity_id} update_state {repr(e)}, status = {status}")
 
 
-class MideaE2WaterHeater(MideaWaterHeater):
+class TaichuanE2WaterHeater(TaichuanWaterHeater):
     def __init__(self, device, entity_key):
         super().__init__(device, entity_key)
 
@@ -149,7 +149,7 @@ class MideaE2WaterHeater(MideaWaterHeater):
         return E2_TEMPERATURE_MAX
 
 
-class MideaE3WaterHeater(MideaWaterHeater):
+class TaichuanE3WaterHeater(TaichuanWaterHeater):
     def __init__(self, device, entity_key):
         super().__init__(device, entity_key)
 
@@ -166,7 +166,7 @@ class MideaE3WaterHeater(MideaWaterHeater):
         return PRECISION_HALVES if self._device.precision_halves else PRECISION_WHOLE
 
 
-class MideaC3WaterHeater(MideaWaterHeater):
+class TaichuanC3WaterHeater(TaichuanWaterHeater):
     def __init__(self, device, entity_key):
         super().__init__(device, entity_key)
 
@@ -203,7 +203,7 @@ class MideaC3WaterHeater(MideaWaterHeater):
         self._device.set_attribute(attr=C3Attributes.dhw_power, value=False)
 
 
-class MideaE6WaterHeater(MideaWaterHeater):
+class TaichuanE6WaterHeater(TaichuanWaterHeater):
     _powers = [
         E6Attributes.heating_power,
         E6Attributes.main_power,
@@ -220,9 +220,9 @@ class MideaE6WaterHeater(MideaWaterHeater):
     def __init__(self, device, entity_key, use):
         super().__init__(device, entity_key)
         self._use = use
-        self._power_attr = MideaE6WaterHeater._powers[self._use]
-        self._current_temperature_attr = MideaE6WaterHeater._current_temperatures[self._use]
-        self._target_temperature_attr = MideaE6WaterHeater._target_temperatures[self._use]
+        self._power_attr = TaichuanE6WaterHeater._powers[self._use]
+        self._current_temperature_attr = TaichuanE6WaterHeater._current_temperatures[self._use]
+        self._target_temperature_attr = TaichuanE6WaterHeater._target_temperatures[self._use]
 
     @property
     def state(self):
@@ -265,7 +265,7 @@ class MideaE6WaterHeater(MideaWaterHeater):
         self._device.set_attribute(attr=self._power_attr, value=False)
 
 
-class MideaCDWaterHeater(MideaWaterHeater):
+class TaichuanCDWaterHeater(TaichuanWaterHeater):
     def __init__(self, device, entity_key):
         super().__init__(device, entity_key)
 

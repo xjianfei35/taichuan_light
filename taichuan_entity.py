@@ -1,16 +1,16 @@
 from homeassistant.helpers.entity import Entity
 from .const import DOMAIN
-from .midea_devices import MIDEA_DEVICES
+from .taichuan_devices import TAICHUAN_DEVICES
 
 import logging
 _LOGGER = logging.getLogger(__name__)
 
 
-class MideaEntity(Entity):
+class TaichuanEntity(Entity):
     def __init__(self, device, entity_key: str):
         self._device = device
         self._device.register_update(self.update_state)
-        self._config = MIDEA_DEVICES[self._device.device_type]["entities"][entity_key]
+        self._config = TAICHUAN_DEVICES[self._device.device_type]["entities"][entity_key]
         self._entity_key = entity_key
         self._unique_id = f"{DOMAIN}.{self._device.device_id}_{entity_key}"
         self.entity_id = self._unique_id
@@ -23,8 +23,8 @@ class MideaEntity(Entity):
     @property
     def device_info(self):
         return {
-            "manufacturer": "Midea",
-            "model": f"{MIDEA_DEVICES[self._device.device_type]['name']} "
+            "manufacturer": "Taichuan",
+            "model": f"{TAICHUAN_DEVICES[self._device.device_type]['name']} "
                      f"{self._device.model}"
                      f" ({self._device.subtype})",
             "identifiers": {(DOMAIN, self._device.device_id)},

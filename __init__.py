@@ -14,7 +14,7 @@ from .const import (
     EXTRA_CONTROL,
     ALL_PLATFORM,
 )
-from .midea_devices import MIDEA_DEVICES
+from .taichuan_devices import TAICHUAN_DEVICES
 
 from homeassistant.core import HomeAssistant
 from homeassistant.const import (
@@ -27,7 +27,7 @@ from homeassistant.const import (
     CONF_TYPE,
     CONF_CUSTOMIZE,
 )
-from .midea.devices import device_selector
+from .taichuan.devices import device_selector
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -60,7 +60,7 @@ async def update_listener(hass, config_entry):
 async def async_setup(hass: HomeAssistant, hass_config: dict):
     hass.data.setdefault(DOMAIN, {})
     attributes = []
-    for device_entities in MIDEA_DEVICES.values():
+    for device_entities in TAICHUAN_DEVICES.values():
         for attribute_name, attribute in device_entities.get("entities").items():
             if attribute.get("type") in EXTRA_SWITCH and attribute_name.value not in attributes:
                 attributes.append(attribute_name.value)
@@ -73,7 +73,7 @@ async def async_setup(hass: HomeAssistant, hass_config: dict):
         if dev:
             if attr == "fan_speed" and value == "auto":
                 value = 102
-            item = MIDEA_DEVICES.get(dev.device_type).get("entities").get(attr)
+            item = TAICHUAN_DEVICES.get(dev.device_type).get("entities").get(attr)
             if (item and (item.get("type") in EXTRA_SWITCH) or
                          (dev.device_type == 0xAC and attr == "fan_speed" and value in range(0, 103))):
                 dev.set_attribute(attr=attr, value=value)

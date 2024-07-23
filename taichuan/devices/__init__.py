@@ -21,7 +21,7 @@ def device_selector(
         else:
             device_path = f".{'%02x' % device_type}.device"
         module = import_module(device_path, __package__)
-        device = module.MideaAppliance(
+        device = module.TaichuanAppliance(
             name=name,
             device_id=device_id,
             ip_address=ip_address,

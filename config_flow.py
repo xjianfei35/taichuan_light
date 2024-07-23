@@ -35,10 +35,10 @@ from homeassistant.const import (
 )
 import homeassistant.helpers.config_validation as cv
 from homeassistant.helpers.aiohttp_client import async_create_clientsession
-from .midea.core.discover import discover
-from .midea.core.cloud import get_midea_cloud
-from .midea.core.device import MiedaDevice
-from .midea_devices import MIDEA_DEVICES
+from .taichuan.core.discover import discover
+from .taichuan.core.cloud import get_taichuan_cloud
+from .taichuan.core.device import MiedaDevice
+from .taichuan_devices import TAICHUAN_DEVICES
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -49,7 +49,7 @@ STORAGE_PATH = f".storage/{DOMAIN}"
 SERVERS = {
     1: "MSmartHome",
     2: "美的美居",
-    3: "Midea Air",
+    3: "Taichuan Air",
     4: "NetHome Plus",
     5: "Ariston Clima",
 }
@@ -70,7 +70,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     account = {}
     cloud = None
     session = None
-    for device_type, device_info in MIDEA_DEVICES.items():
+    for device_type, device_info in TAICHUAN_DEVICES.items():
         unsorted[device_type] = device_info["name"]
 
     unsorted = sorted(unsorted.items(), key=lambda x: x[1])
@@ -141,7 +141,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             if self.session is None:
                 self.session = async_create_clientsession(self.hass)
             if self.cloud is None:
-                self.cloud = get_midea_cloud(
+                self.cloud = get_taichuan_cloud(
                     session=self.session,
                     cloud_name=SERVERS[user_input[CONF_SERVER]],
                     account=user_input[CONF_ACCOUNT],
@@ -236,7 +236,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 if self.session is None:
                     self.session = async_create_clientsession(self.hass)
                 if self.cloud is None:
-                    self.cloud = get_midea_cloud(
+                    self.cloud = get_taichuan_cloud(
                         self.account[CONF_SERVER], self.session, self.account[CONF_ACCOUNT],
                         self.account[CONF_PASSWORD])
                 if not await self.cloud.login():
@@ -255,7 +255,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 if device.get(CONF_PROTOCOL) == 3:
                     if self.account[CONF_SERVER] == "美的美居":
                         _LOGGER.debug(f"Try to get the Token and the Key use the preset MSmartHome account")
-                        self.cloud = get_midea_cloud(
+                        self.cloud = get_taichuan_cloud(
                             "MSmartHome",
                             self.session,
                             bytes.fromhex(format((PRESET_ACCOUNT[0] ^ PRESET_ACCOUNT[1]), 'X')).decode('ASCII'),
@@ -411,11 +411,11 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
             self._device_type = 0xac
         if CONF_SENSORS in self._config_entry.options:
             for key in self._config_entry.options[CONF_SENSORS]:
-                if key not in MIDEA_DEVICES[self._device_type]["entities"]:
+                if key not in TAICHUAN_DEVICES[self._device_type]["entities"]:
                     self._config_entry.options[CONF_SENSORS].remove(key)
         if CONF_SWITCHES in self._config_entry.options:
             for key in self._config_entry.options[CONF_SWITCHES]:
-                if key not in MIDEA_DEVICES[self._device_type]["entities"]:
+                if key not in TAICHUAN_DEVICES[self._device_type]["entities"]:
                     self._config_entry.options[CONF_SWITCHES].remove(key)
 
     async def async_step_init(self, user_input=None):
@@ -425,7 +425,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
             return self.async_create_entry(title="", data=user_input)
         sensors = {}
         switches = {}
-        for attribute, attribute_config in MIDEA_DEVICES.get(self._device_type).get("entities").items():
+        for attribute, attribute_config in TAICHUAN_DEVICES.get(self._device_type).get("entities").items():
             attribute_name = attribute if type(attribute) is str else attribute.value
             if attribute_config.get("type") in EXTRA_SENSOR:
                 sensors[attribute_name] = attribute_config.get("name")

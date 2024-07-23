@@ -1,5 +1,5 @@
 from homeassistant.const import Platform
-DOMAIN = "midea_ac_lan"
+DOMAIN = "taichuan_ac_lan"
 COMPONENT = "component"
 DEVICES = "devices"
 CONF_KEY = "key"

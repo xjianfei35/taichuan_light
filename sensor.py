@@ -1,5 +1,5 @@
-from .midea_entity import MideaEntity
-from .midea_devices import MIDEA_DEVICES
+from .taichuan_entity import TaichuanEntity
+from .taichuan_devices import TAICHUAN_DEVICES
 from homeassistant.components.sensor import SensorEntity
 from homeassistant.const import(
     Platform,
@@ -19,14 +19,14 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
         CONF_SENSORS, []
     )
     sensors = []
-    for entity_key, config in MIDEA_DEVICES[device.device_type]["entities"].items():
+    for entity_key, config in TAICHUAN_DEVICES[device.device_type]["entities"].items():
         if config["type"] == Platform.SENSOR and entity_key in extra_sensors:
-            sensor = MideaSensor(device, entity_key)
+            sensor = TaichuanSensor(device, entity_key)
             sensors.append(sensor)
     async_add_entities(sensors)
 
 
-class MideaSensor(MideaEntity, SensorEntity):
+class TaichuanSensor(TaichuanEntity, SensorEntity):
     @property
     def native_value(self):
         return self._device.get_attribute(self._entity_key)

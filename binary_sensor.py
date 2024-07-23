@@ -4,8 +4,8 @@ from .const import (
     DOMAIN,
     DEVICES
 )
-from .midea_entity import MideaEntity
-from .midea_devices import MIDEA_DEVICES
+from .taichuan_entity import TaichuanEntity
+from .taichuan_devices import TAICHUAN_DEVICES
 
 
 async def async_setup_entry(hass, config_entry, async_add_entities):
@@ -15,14 +15,14 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
         CONF_SENSORS, []
     )
     binary_sensors = []
-    for entity_key, config in MIDEA_DEVICES[device.device_type]["entities"].items():
+    for entity_key, config in TAICHUAN_DEVICES[device.device_type]["entities"].items():
         if config["type"] == Platform.BINARY_SENSOR and entity_key in extra_sensors:
-            sensor = MideaSensor(device, entity_key)
+            sensor = TaichuanSensor(device, entity_key)
             binary_sensors.append(sensor)
     async_add_entities(binary_sensors)
 
 
-class MideaSensor(MideaEntity, BinarySensorEntity):
+class TaichuanSensor(TaichuanEntity, BinarySensorEntity):
     @property
     def device_class(self):
         return self._config.get("device_class")

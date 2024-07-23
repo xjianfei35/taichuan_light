@@ -14,13 +14,13 @@ from .const import (
     DOMAIN,
     DEVICES,
 )
-from .midea.devices.ac.device import DeviceAttributes as ACAttributes
-from .midea.devices.c3.device import DeviceAttributes as C3Attributes
-from .midea.devices.cc.device import DeviceAttributes as CCAttributes
-from .midea.devices.cf.device import DeviceAttributes as CFAttributes
-from .midea.devices.fb.device import DeviceAttributes as FBAttributes
-from .midea_devices import MIDEA_DEVICES
-from .midea_entity import MideaEntity
+from .taichuan.devices.ac.device import DeviceAttributes as ACAttributes
+from .taichuan.devices.c3.device import DeviceAttributes as C3Attributes
+from .taichuan.devices.cc.device import DeviceAttributes as CCAttributes
+from .taichuan.devices.cf.device import DeviceAttributes as CFAttributes
+from .taichuan.devices.fb.device import DeviceAttributes as FBAttributes
+from .taichuan_devices import TAICHUAN_DEVICES
+from .taichuan_entity import TaichuanEntity
 
 import logging
 _LOGGER = logging.getLogger(__name__)
@@ -40,22 +40,22 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
         CONF_SWITCHES, []
     )
     devs = []
-    for entity_key, config in MIDEA_DEVICES[device.device_type]["entities"].items():
+    for entity_key, config in TAICHUAN_DEVICES[device.device_type]["entities"].items():
         if config["type"] == Platform.CLIMATE and (config.get("default") or entity_key in extra_switches):
             if device.device_type == 0xAC:
-                devs.append(MideaACClimate(device, entity_key))
+                devs.append(TaichuanACClimate(device, entity_key))
             elif device.device_type == 0xCC:
-                devs.append(MideaCCClimate(device, entity_key))
+                devs.append(TaichuanCCClimate(device, entity_key))
             elif device.device_type == 0xCF:
-                devs.append(MideaCFClimate(device, entity_key))
+                devs.append(TaichuanCFClimate(device, entity_key))
             elif device.device_type == 0xC3:
-                devs.append(MideaC3Climate(device, entity_key, config["zone"]))
+                devs.append(TaichuanC3Climate(device, entity_key, config["zone"]))
             elif device.device_type == 0xFB:
-                devs.append(MideaFBClimate(device, entity_key))
+                devs.append(TaichuanFBClimate(device, entity_key))
     async_add_entities(devs)
 
 
-class MideaClimate(MideaEntity, ClimateEntity):
+class TaichuanClimate(TaichuanEntity, ClimateEntity):
     def __init__(self, device, entity_key):
         super().__init__(device, entity_key)
 
@@ -207,7 +207,7 @@ class MideaClimate(MideaEntity, ClimateEntity):
         self._device.set_attribute(attr="aux_heating", value=False)
 
 
-class MideaACClimate(MideaClimate):
+class TaichuanACClimate(TaichuanClimate):
     def __init__(self, device, entity_key):
         super().__init__(device, entity_key)
         self._modes = [HVACMode.OFF, HVACMode.AUTO, HVACMode.COOL, HVACMode.DRY, HVACMode.HEAT, HVACMode.FAN_ONLY]
@@ -273,7 +273,7 @@ class MideaACClimate(MideaClimate):
         self._device.set_swing(swing_vertical=swing_vertical, swing_horizontal=swing_horizontal)
 
 
-class MideaCCClimate(MideaClimate):
+class TaichuanCCClimate(TaichuanClimate):
     def __init__(self, device, entity_key):
         super().__init__(device, entity_key)
         self._modes = [HVACMode.OFF, HVACMode.FAN_ONLY, HVACMode.DRY, HVACMode.HEAT, HVACMode.COOL, HVACMode.AUTO]
@@ -309,7 +309,7 @@ class MideaCCClimate(MideaClimate):
         )
 
 
-class MideaCFClimate(MideaClimate):
+class TaichuanCFClimate(TaichuanClimate):
     def __init__(self, device, entity_key):
         super().__init__(device, entity_key)
         self._modes = [HVACMode.OFF, HVACMode.AUTO, HVACMode.COOL, HVACMode.HEAT]
@@ -343,7 +343,7 @@ class MideaCFClimate(MideaClimate):
         return self._device.get_attribute(CFAttributes.current_temperature)
 
 
-class MideaC3Climate(MideaClimate):
+class TaichuanC3Climate(TaichuanClimate):
     _powers = [
         C3Attributes.zone1_power,
         C3Attributes.zone2_power,
@@ -353,7 +353,7 @@ class MideaC3Climate(MideaClimate):
         super().__init__(device, entity_key)
         self._zone = zone
         self._modes = [HVACMode.OFF, HVACMode.AUTO, HVACMode.COOL, HVACMode.HEAT]
-        self._power_attr = MideaC3Climate._powers[self._zone]
+        self._power_attr = TaichuanC3Climate._powers[self._zone]
 
     @property
     def supported_features(self):
@@ -424,7 +424,7 @@ class MideaC3Climate(MideaClimate):
             self._device.set_mode(self._zone, self._modes.index(hvac_mode))
 
 
-class MideaFBClimate(MideaClimate):
+class TaichuanFBClimate(TaichuanClimate):
     def __init__(self, device, entity_key):
         super().__init__(device, entity_key)
         self._modes = [HVACMode.OFF, HVACMode.HEAT]

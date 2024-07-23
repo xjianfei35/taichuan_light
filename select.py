@@ -1,5 +1,5 @@
-from .midea_entity import MideaEntity
-from .midea_devices import MIDEA_DEVICES
+from .taichuan_entity import TaichuanEntity
+from .taichuan_devices import TAICHUAN_DEVICES
 from homeassistant.components.select import SelectEntity
 from homeassistant.const import (
     Platform,
@@ -19,14 +19,14 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
         CONF_SWITCHES, []
     )
     selects = []
-    for entity_key, config in MIDEA_DEVICES[device.device_type]["entities"].items():
+    for entity_key, config in TAICHUAN_DEVICES[device.device_type]["entities"].items():
         if config["type"] == Platform.SELECT and entity_key in extra_switches:
-            dev = MideaSelect(device, entity_key)
+            dev = TaichuanSelect(device, entity_key)
             selects.append(dev)
     async_add_entities(selects)
 
 
-class MideaSelect(MideaEntity, SelectEntity):
+class TaichuanSelect(TaichuanEntity, SelectEntity):
     def __init__(self, device, entity_key: str):
         super().__init__(device, entity_key)
         self._options_name = self._config.get("options")

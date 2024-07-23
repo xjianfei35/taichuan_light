@@ -10,11 +10,11 @@ from .const import (
     DOMAIN,
     DEVICES,
 )
-from .midea.devices.ac.device import DeviceAttributes as ACAttributes
-from .midea.devices.ce.device import DeviceAttributes as CEAttributes
-from .midea.devices.x40.device import DeviceAttributes as X40Attributes
-from .midea_devices import MIDEA_DEVICES
-from .midea_entity import MideaEntity
+from .taichuan.devices.ac.device import DeviceAttributes as ACAttributes
+from .taichuan.devices.ce.device import DeviceAttributes as CEAttributes
+from .taichuan.devices.x40.device import DeviceAttributes as X40Attributes
+from .taichuan_devices import TAICHUAN_DEVICES
+from .taichuan_entity import TaichuanEntity
 
 import logging
 _LOGGER = logging.getLogger(__name__)
@@ -27,22 +27,22 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
         CONF_SWITCHES, []
     )
     devs = []
-    for entity_key, config in MIDEA_DEVICES[device.device_type]["entities"].items():
+    for entity_key, config in TAICHUAN_DEVICES[device.device_type]["entities"].items():
         if config["type"] == Platform.FAN and (config.get("default") or entity_key in extra_switches):
             if device.device_type == 0xFA:
-                devs.append(MideaFAFan(device, entity_key))
+                devs.append(TaichuanFAFan(device, entity_key))
             elif device.device_type == 0xB6:
-                devs.append(MideaB6Fan(device, entity_key))
+                devs.append(TaichuanB6Fan(device, entity_key))
             elif device.device_type == 0xAC:
-                devs.append(MideaACFreshAirFan(device, entity_key))
+                devs.append(TaichuanACFreshAirFan(device, entity_key))
             elif device.device_type == 0xCE:
-                devs.append(MideaCEFan(device, entity_key))
+                devs.append(TaichuanCEFan(device, entity_key))
             elif device.device_type == 0x40:
-                devs.append(Midea40Fan(device, entity_key))
+                devs.append(Taichuan40Fan(device, entity_key))
     async_add_entities(devs)
 
 
-class MideaFan(MideaEntity, FanEntity):
+class TaichuanFan(TaichuanEntity, FanEntity):
     def __init__(self, device, entity_key):
         super().__init__(device, entity_key)
 
@@ -112,21 +112,21 @@ class MideaFan(MideaEntity, FanEntity):
             _LOGGER.debug(f"Entity {self.entity_id} update_state {repr(e)}, status = {status}")
 
 
-class MideaFAFan(MideaFan):
+class TaichuanFAFan(TaichuanFan):
     def __init__(self, device, entity_key):
         super().__init__(device, entity_key)
         self._attr_supported_features = SUPPORT_SET_SPEED | SUPPORT_OSCILLATE | SUPPORT_PRESET_MODE
         self._attr_speed_count = self._device.speed_count
 
 
-class MideaB6Fan(MideaFan):
+class TaichuanB6Fan(TaichuanFan):
     def __init__(self, device, entity_key):
         super().__init__(device, entity_key)
         self._attr_supported_features = SUPPORT_SET_SPEED | SUPPORT_PRESET_MODE
         self._attr_speed_count = self._device.speed_count
 
 
-class MideaACFreshAirFan(MideaFan):
+class TaichuanACFreshAirFan(TaichuanFan):
     def __init__(self, device, entity_key):
         super().__init__(device, entity_key)
         self._attr_supported_features = SUPPORT_SET_SPEED | SUPPORT_PRESET_MODE
@@ -170,7 +170,7 @@ class MideaACFreshAirFan(MideaFan):
         return self._device.get_attribute(attr=ACAttributes.fresh_air_mode)
 
 
-class MideaCEFan(MideaFan):
+class TaichuanCEFan(TaichuanFan):
     def __init__(self, device, entity_key):
         super().__init__(device, entity_key)
         self._attr_supported_features = SUPPORT_SET_SPEED | SUPPORT_PRESET_MODE
@@ -183,7 +183,7 @@ class MideaCEFan(MideaFan):
         await self.hass.async_add_executor_job(self.set_percentage, percentage)
 
 
-class Midea40Fan(MideaFan):
+class Taichuan40Fan(TaichuanFan):
     def __init__(self, device, entity_key):
         super().__init__(device, entity_key)
         self._attr_supported_features = SUPPORT_SET_SPEED | SUPPORT_OSCILLATE
