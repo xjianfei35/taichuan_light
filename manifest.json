@@ -1,7 +1,7 @@
 {
   "domain": "taichuain_light",
   "name": "TaiChuan_Light",
-  "codeowners": ["@georgezhao2010"],
+  "codeowners": ["@xjianfei35"],
   "config_flow": true,
   "dependencies": [],
   "documentation": "https://git.naszx.xyz:25443/personal/taichuan_light",
