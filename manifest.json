@@ -1,13 +1,13 @@
 {
-  "domain": "midea_ac_lan",
-  "name": "Midea AC LAN",
+  "domain": "taichuain_light",
+  "name": "TaiChuan_Light",
   "codeowners": ["@georgezhao2010"],
   "config_flow": true,
   "dependencies": [],
-  "documentation": "https://github.com/georgezhao2010/midea_ac_lan#readme",
+  "documentation": "https://git.naszx.xyz:25443/personal/taichuan_light",
   "integration_type": "device",
   "iot_class": "local_push",
-  "issue_tracker": "https://github.com/georgezhao2010/midea_ac_lan/issues",
+  "issue_tracker": "https://git.naszx.xyz:25443/personal/taichuan_light/issues",
   "requirements": [],
   "version": "v0.3.22"
 }
