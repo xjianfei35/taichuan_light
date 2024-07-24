@@ -129,7 +129,7 @@ class TaichuanCloud:
         #sign = self._security.sign("", dump_data, random)
         header.update({
             "content-type": "application/x-www-form-urlencoded",
-            "Connection": "keep-alive"
+            "Connection": "keep-alive",
         })
 
         if self._access_token is not None:
