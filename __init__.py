@@ -14,7 +14,7 @@ from .const import (
     EXTRA_CONTROL,
     ALL_PLATFORM,
 )
-from .taichuan_devices import TAICHUAN_DEVICES
+from .taichuan_device import TAICHUAN_DEVICES
 
 from homeassistant.core import HomeAssistant
 from homeassistant.const import (

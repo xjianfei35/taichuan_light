@@ -11,7 +11,7 @@ from .const import (
 )
 from .taichuan.devices.x13.device import DeviceAttributes as X13Attributes
 from .taichuan_entity import TaichuanEntity
-from .taichuan_devices import TAICHUAN_DEVICES
+from .taichuan_device import TAICHUAN_DEVICES
 
 _LOGGER = logging.getLogger(__name__)
 

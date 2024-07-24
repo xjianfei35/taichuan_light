@@ -19,7 +19,7 @@ from .taichuan.devices.c3.device import DeviceAttributes as C3Attributes
 from .taichuan.devices.cc.device import DeviceAttributes as CCAttributes
 from .taichuan.devices.cf.device import DeviceAttributes as CFAttributes
 from .taichuan.devices.fb.device import DeviceAttributes as FBAttributes
-from .taichuan_devices import TAICHUAN_DEVICES
+from .taichuan_device import TAICHUAN_DEVICES
 from .taichuan_entity import TaichuanEntity
 
 import logging

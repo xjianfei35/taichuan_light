@@ -13,7 +13,7 @@ from .const import (
 from .taichuan.devices.ac.device import DeviceAttributes as ACAttributes
 from .taichuan.devices.ce.device import DeviceAttributes as CEAttributes
 from .taichuan.devices.x40.device import DeviceAttributes as X40Attributes
-from .taichuan_devices import TAICHUAN_DEVICES
+from .taichuan_device import TAICHUAN_DEVICES
 from .taichuan_entity import TaichuanEntity
 
 import logging

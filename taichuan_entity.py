@@ -1,6 +1,6 @@
 from homeassistant.helpers.entity import Entity
 from .const import DOMAIN
-from .taichuan_devices import TAICHUAN_DEVICES
+from .taichuan_device import TAICHUAN_DEVICES
 
 import logging
 _LOGGER = logging.getLogger(__name__)

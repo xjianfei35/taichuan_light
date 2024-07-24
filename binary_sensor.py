@@ -5,7 +5,7 @@ from .const import (
     DEVICES
 )
 from .taichuan_entity import TaichuanEntity
-from .taichuan_devices import TAICHUAN_DEVICES
+from .taichuan_device import TAICHUAN_DEVICES
 
 
 async def async_setup_entry(hass, config_entry, async_add_entities):

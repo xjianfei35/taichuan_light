@@ -1,5 +1,5 @@
 from .taichuan_entity import TaichuanEntity
-from .taichuan_devices import TAICHUAN_DEVICES
+from .taichuan_device import TAICHUAN_DEVICES
 from homeassistant.components.select import SelectEntity
 from homeassistant.const import (
     Platform,

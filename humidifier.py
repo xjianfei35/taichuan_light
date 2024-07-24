@@ -9,7 +9,7 @@ from .const import (
     DOMAIN,
     DEVICES,
 )
-from .taichuan_devices import TAICHUAN_DEVICES
+from .taichuan_device import TAICHUAN_DEVICES
 from .taichuan_entity import TaichuanEntity
 
 import logging
