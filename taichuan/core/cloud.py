@@ -188,16 +188,6 @@ class UCloud(TaichuanCloud):
             password: str,
     ):
         super().__init__(
-            '''
-            session=session,
-            security=MeijuCloudSecurity(
-                login_key=clouds[cloud_name]["login_key"],
-                iot_key=clouds[cloud_name]["iot_key"],
-                hmac_key=clouds[cloud_name]["hmac_key"],
-            ),
-            app_id=clouds[cloud_name]["app_id"],
-            app_key=clouds[cloud_name]["app_key"],
-            '''
             session=session,
             username=username,
             password=password,
