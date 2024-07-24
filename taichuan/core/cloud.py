@@ -208,17 +208,17 @@ class UCloud(TaichuanCloud):
             endpoint="/system/token",
             data=data
         ):
-                #self._access_token = response["mdata"]["accessToken"]
-                #获取bearer token
-        if(response["access_token"]!=""):
-            self._access_token = response["access_token"]
-            self._access_token_type = response["token_type"]
-            self._expire_in = response["expire_in"] 
-            self._scope = response["scope"]
-            return True
-        else
-            _LOGGER.error(f"login error,endpoint[{endpoint}],data[{data}]")
-            return False
+        #self._access_token = response["mdata"]["accessToken"]
+        #获取bearer token
+            if(response["access_token"]!=""):
+                self._access_token = response["access_token"]
+                self._access_token_type = response["token_type"]
+                self._expire_in = response["expire_in"] 
+                self._scope = response["scope"]
+                return True
+            else
+                _LOGGER.error(f"login error,endpoint[{endpoint}],data[{data}]")
+                return False
 
     async def list_home(self):
         if response := await self._api_request(
