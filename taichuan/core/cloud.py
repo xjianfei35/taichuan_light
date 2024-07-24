@@ -21,34 +21,6 @@ clouds = {
         "hmac_key": bytes.fromhex(format(117390035944627627450677220413733956185864939010425, 'x')).decode(),
         "api_url": "https://ucloud.taichuan.net",
     }
-    '''
-    "MSmartHome": {
-        "class_name": "MSmartHomeCloud",
-        "app_id": "1010",
-        "app_key": "ac21b9f9cbfe4ca5a88562ef25e2b768",
-        "iot_key": bytes.fromhex(format(7882822598523843940, 'x')).decode(),
-        "hmac_key": bytes.fromhex(format(117390035944627627450677220413733956185864939010425, 'x')).decode(),
-        "api_url": "https://mp-prod.appsmb.com/mas/v5/app/proxy?alias=",
-    },
-    "Taichuan Air": {
-        "class_name": "TaichuanAirCloud",
-        "app_id": "1117",
-        "app_key": "ff0cf6f5f0c3471de36341cab3f7a9af",
-        "api_url": "https://mapp.appsmb.com",
-    },
-    "NetHome Plus": {
-        "class_name": "TaichuanAirCloud",
-        "app_id": "1017",
-        "app_key": "3742e9e5842d4ad59c2db887e12449f9",
-        "api_url": "https://mapp.appsmb.com",
-    },
-    "Ariston Clima": {
-        "class_name": "TaichuanAirCloud",
-        "app_id": "1005",
-        "app_key": "434a209a5ce141c3b726de067835d7f0",
-        "api_url": "https://mapp.appsmb.com",
-    }
-    '''
 }
 
 default_keys = {
