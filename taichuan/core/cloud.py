@@ -13,7 +13,7 @@ _LOGGER = logging.getLogger(__name__)
 
 clouds = {
     "珠海U家": {
-        "class_name": "TaichuanCloud",
+        "class_name": "UCloud",
         "app_id": "900",
         "app_key": "46579c15",
         "login_key": "ad0ee21d48a64bf49f4fb583ab76e799",
@@ -226,7 +226,8 @@ class UCloud(TaichuanCloud):
             app_id=clouds[cloud_name]["app_id"],
             app_key=clouds[cloud_name]["app_key"],
             '''
-            account=account,
+            session=session,
+            username=username,
             password=password,
             api_url=clouds[cloud_name]["api_url"]
         )
