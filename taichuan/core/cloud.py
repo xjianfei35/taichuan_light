@@ -6,20 +6,22 @@ import base64
 from threading import Lock
 from aiohttp import ClientSession
 from secrets import token_hex
+from urlib.pasrse import quote
 from .security import CloudSecurity, MeijuCloudSecurity, MSmartCloudSecurity, TaichuanAirSecurity
 
 _LOGGER = logging.getLogger(__name__)
 
 clouds = {
-    "美的美居": {
-        "class_name": "MeijuCloud",
+    "珠海U家": {
+        "class_name": "TaichuanCloud",
         "app_id": "900",
         "app_key": "46579c15",
         "login_key": "ad0ee21d48a64bf49f4fb583ab76e799",
         "iot_key": bytes.fromhex(format(9795516279659324117647275084689641883661667, 'x')).decode(),
         "hmac_key": bytes.fromhex(format(117390035944627627450677220413733956185864939010425, 'x')).decode(),
-        "api_url": "https://mp-prod.smarttaichuan.net/mas/v5/app/proxy?alias=",
-    },
+        "api_url": "https://ucloud.taichuan.net",
+    }
+    '''
     "MSmartHome": {
         "class_name": "MSmartHomeCloud",
         "app_id": "1010",
@@ -46,6 +48,7 @@ clouds = {
         "app_key": "434a209a5ce141c3b726de067835d7f0",
         "api_url": "https://mapp.appsmb.com",
     }
+    '''
 }
 
 default_keys = {
@@ -60,69 +63,87 @@ default_keys = {
 class TaichuanCloud:
     def __init__(
             self,
-            session: ClientSession,
-            security: CloudSecurity,
-            app_id: str,
-            app_key: str,
-            account: str,
+            #session: ClientSession,
+            #security: CloudSecurity,
+            #app_id: str,
+            client_id: str,
+            grand_type: str,
+            #app_key: str,
+            username: str,
+            scope: str,
             password: str,
-            api_url: str
+            api_url: str,
+            bearer_token: str
     ):
+        '''
         self._device_id = CloudSecurity.get_deviceid(account)
         self._session = session
         self._security = security
         self._api_lock = Lock()
         self._app_id = app_id
         self._app_key = app_key
-        self._account = account
+        '''
+        self._username= username 
         self._password = password
         self._api_url = api_url
         self._access_token = None
-        self._uid = None
-        self._login_id = None
+        self._expire_in = None
+        self._access_token_type = None 
+        self._scope = scope 
 
     def _make_general_data(self):
         return {}
 
     async def _api_request(self, endpoint: str, data: dict, header=None) -> dict | None:
         header = header or {}
-        if not data.get("reqId"):
+        if not data.get("client_id"):
             data.update({
-                "reqId": token_hex(16)
+                "reqId": "uhome.android" 
             })
-        if not data.get("stamp"):
+        if not data.get("client_secret"):
             data.update({
-                "stamp":  datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+                "client_secret": "123456"
             })
-        random = str(int(time.time()))
+
+        if not data.get("grant_type"):
+            data.update({
+                "grant_type": "password"
+            })
+        
+        if not data.get("scope"):
+            data.update({
+                "scope": "client_id=uhome.android"
+            })
+
+        if not date.get("username"):
+            date.update({
+                "username": "17375830293"
+            })
+        if not date.get("password"):
+            data.update({
+                "password": quote(_password)
+            })
+        
         url = self._api_url + endpoint
         dump_data = json.dumps(data)
-        sign = self._security.sign("", dump_data, random)
+        #sign = self._security.sign("", dump_data, random)
         header.update({
-            "content-type": "application/json; charset=utf-8",
-            "secretVersion": "1",
-            "sign": sign,
-            "random": random,
+            "content-type": "application/x-www-form-urlencoded",
+            "Connection": "keep-alive"
         })
-        if self._uid is not None:
-            header.update({
-                "uid": self._uid
-            })
+
         if self._access_token is not None:
             header.update({
-                "accessToken": self._access_token
+                "Authorization": self._access_token_type+" "+self._access_token
             })
-        response: dict = {"code": -1}
-        for i in range(0, 3):
-            try:
-                with self._api_lock:
-                    r = await self._session.request("POST", url, headers=header, data=dump_data, timeout=10)
-                    raw = await r.read()
-                    _LOGGER.debug(f"Taichuan cloud API url: {url}, data: {data}, response: {raw}")
-                    response = json.loads(raw)
-                    break
-            except Exception as e:
-                _LOGGER.warning(f"Taichuan cloud API error, url: {url}, error: {repr(e)}")
+        response: dict = {"error": "invalid client"}
+        try:
+            r = await self._session.request("POST", url, headers=header, data=dump_data, timeout=10)
+            raw = await r.read()
+            _LOGGER.debug(f"Taichuan cloud API url: {url}, data: {data}, response: {raw}")
+        except Exception as e:
+            _LOGGER.warning(f"Taichuan cloud API error, url: {url}, error: {repr(e)}")
+        
         if int(response["code"]) == 0 and "data" in response:
             return response["data"]
         return None
@@ -186,15 +207,16 @@ class TaichuanCloud:
         raise NotImplementedError()
 
 
-class MeijuCloud(TaichuanCloud):
+class UCloud(TaichuanCloud):
     def __init__(
             self,
             cloud_name: str,
             session: ClientSession,
-            account: str,
+            username: str,
             password: str,
     ):
         super().__init__(
+            '''
             session=session,
             security=MeijuCloudSecurity(
                 login_key=clouds[cloud_name]["login_key"],
@@ -203,47 +225,37 @@ class MeijuCloud(TaichuanCloud):
             ),
             app_id=clouds[cloud_name]["app_id"],
             app_key=clouds[cloud_name]["app_key"],
+            '''
             account=account,
             password=password,
             api_url=clouds[cloud_name]["api_url"]
         )
 
     async def login(self) -> bool:
-        if login_id := await self._get_login_id():
-            self._login_id = login_id
-            stamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
-            data = {
-                "iotData": {
-                    "clientType": 1,
-                    "deviceId": self._device_id,
-                    "iampwd": self._security.encrypt_iam_password(self._login_id, self._password),
-                    "iotAppId": self._app_id,
-                    "loginAccount": self._account,
-                    "password": self._security.encrypt_password(self._login_id, self._password),
-                    "reqId": token_hex(16),
-                    "stamp": stamp
-                },
-                "data": {
-                    "appKey": self._app_key,
-                    "deviceId": self._device_id,
-                    "platform": 2
-                },
-                "timestamp": stamp,
-                "stamp": stamp
-            }
-            if response := await self._api_request(
-                endpoint="/mj/user/login",
-                data=data
-            ):
-                self._access_token = response["mdata"]["accessToken"]
-                self._security.set_aes_keys(
-                    self._security.aes_decrypt_with_fixed_key(
-                        response["key"]
-                    ), None
-                )
-
-                return True
-        return False
+        data = {
+            "client_id": "uhome.android",
+            "client_secret": "123456",
+            "grant_type": "password",
+            "scope": "client_id=uhome.android",
+            "username": username,
+            "password": quote(password),
+        }
+        
+        if response := await self._api_request(
+            endpoint="/system/token",
+            data=data
+        ):
+                #self._access_token = response["mdata"]["accessToken"]
+                #获取bearer token
+        if(response["access_token"]!=""):
+            self._access_token = response["access_token"]
+            self._access_token_type = response["token_type"]
+            self._expire_in = response["expire_in"] 
+            self._scope = response["scope"]
+            return True
+        else
+            _LOGGER.error(f"login error,endpoint[{endpoint}],data[{data}]")
+            return False
 
     async def list_home(self):
         if response := await self._api_request(
@@ -352,7 +364,7 @@ class MeijuCloud(TaichuanCloud):
                         fp.write(stream)
         return fnm
 
-
+'''
 class MSmartHomeCloud(TaichuanCloud):
     def __init__(
             self,
@@ -633,7 +645,7 @@ class TaichuanAirCloud(TaichuanCloud):
                 appliances[int(appliance["id"])] = device_info
             return appliances
         return None
-
+'''
 
 def get_taichuan_cloud(cloud_name: str, session: ClientSession, account: str, password: str) -> TaichuanCloud | None:
     cloud = None
