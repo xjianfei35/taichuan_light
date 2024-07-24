@@ -32,7 +32,7 @@ class DeviceAttributes(StrEnum):
     temp_fahrenheit = "temp_fahrenheit"
 
 
-class MideaCCDevice(MiedaDevice):
+class TaichuanCCDevice(MiedaDevice):
     _fan_speeds_7level = {
         0x01: "Level 1", 0x02: "Level 2", 0x04: "Level 3",
         0x08: "Level 4", 0x10: "Level 5", 0x20: "Level 6",
@@ -109,9 +109,9 @@ class MideaCCDevice(MiedaDevice):
         if fan_speed is not None and self._attributes[DeviceAttributes.fan_speed_level] is not None:
             if self._fan_speeds is None:
                 if self._attributes[DeviceAttributes.fan_speed_level]:
-                    self._fan_speeds = MideaCCDevice._fan_speeds_3level
+                    self._fan_speeds = TaichuanCCDevice._fan_speeds_3level
                 else:
-                    self._fan_speeds = MideaCCDevice._fan_speeds_7level
+                    self._fan_speeds = TaichuanCCDevice._fan_speeds_7level
             if fan_speed in self._fan_speeds.keys():
                 self._attributes[DeviceAttributes.fan_speed] = self._fan_speeds.get(fan_speed)
             else:
@@ -177,5 +177,5 @@ class MideaCCDevice(MiedaDevice):
             self.build_send(message)
 
 
-class MideaAppliance(MideaCCDevice):
+class TaichuanAppliance(TaichuanCCDevice):
     pass

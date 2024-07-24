@@ -28,7 +28,7 @@ class DeviceAttributes(StrEnum):
     child_lock = "child_lock"
 
 
-class MideaEDDevice(MiedaDevice):
+class TaichuanEDDevice(MiedaDevice):
 
     def __init__(
             self,
@@ -105,5 +105,5 @@ class MideaEDDevice(MiedaDevice):
             self.build_send(message)
 
 
-class MideaAppliance(MideaEDDevice):
+class TaichuanAppliance(TaichuanEDDevice):
     pass

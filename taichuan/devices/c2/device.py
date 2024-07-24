@@ -31,7 +31,7 @@ class DeviceAttributes(StrEnum):
     filter_life = "filter_life"
 
 
-class MideaC2Device(MiedaDevice):
+class TaichuanC2Device(MiedaDevice):
     def __init__(
             self,
             name: str,
@@ -143,5 +143,5 @@ class MideaC2Device(MiedaDevice):
                              })
 
 
-class MideaAppliance(MideaC2Device):
+class TaichuanAppliance(TaichuanC2Device):
     pass

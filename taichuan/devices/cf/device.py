@@ -23,7 +23,7 @@ class DeviceAttributes(StrEnum):
     min_temperature = "min_temperature"
 
 
-class MideaCFDevice(MiedaDevice):
+class TaichuanCFDevice(MiedaDevice):
     def __init__(
             self,
             name: str,
@@ -96,5 +96,5 @@ class MideaCFDevice(MiedaDevice):
         self.build_send(message)
 
 
-class MideaAppliance(MideaCFDevice):
+class TaichuanAppliance(TaichuanCFDevice):
     pass

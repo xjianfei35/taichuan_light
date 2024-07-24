@@ -22,7 +22,7 @@ class DeviceAttributes(StrEnum):
     child_lock = "child_lock"
 
 
-class MideaFBDevice(MiedaDevice):
+class TaichuanFBDevice(MiedaDevice):
     _modes = {0x01: "Auto", 0x02: "ECO", 0x03: "Sleep",
               0x04: "Anti-freezing", 0x05: "Comfort", 0x06: "Constant-temperature",
               0x07: "Normal", 0x08: "Fast-heating", 0x10: "Standby"}
@@ -62,7 +62,7 @@ class MideaFBDevice(MiedaDevice):
 
     @property
     def modes(self):
-        return list(MideaFBDevice._modes.values())
+        return list(TaichuanFBDevice._modes.values())
 
     def build_query(self):
         return [MessageQuery(self._protocol_version)]
@@ -75,8 +75,8 @@ class MideaFBDevice(MiedaDevice):
             if hasattr(message, str(status)):
                 value = getattr(message, str(status))
                 if status == DeviceAttributes.mode:
-                    if value in MideaFBDevice._modes.keys():
-                        self._attributes[status] = MideaFBDevice._modes.get(value)
+                    if value in TaichuanFBDevice._modes.keys():
+                        self._attributes[status] = TaichuanFBDevice._modes.get(value)
                     else:
                         self._attributes[status] = None
                 else:
@@ -87,9 +87,9 @@ class MideaFBDevice(MiedaDevice):
     def set_attribute(self, attr, value):
         if attr == DeviceAttributes.mode:
             message = MessageSet(self._protocol_version, self.subtype)
-            if value in MideaFBDevice._modes.values():
-                message.mode = list(MideaFBDevice._modes.keys())[
-                    list(MideaFBDevice._modes.values()).index(value)
+            if value in TaichuanFBDevice._modes.values():
+                message.mode = list(TaichuanFBDevice._modes.keys())[
+                    list(TaichuanFBDevice._modes.values()).index(value)
                 ]
         else:
             message = MessageSet(self._protocol_version, self.subtype)
@@ -97,5 +97,5 @@ class MideaFBDevice(MiedaDevice):
         self.build_send(message)
 
 
-class MideaAppliance(MideaFBDevice):
+class TaichuanAppliance(TaichuanFBDevice):
     pass

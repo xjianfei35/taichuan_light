@@ -23,7 +23,7 @@ class DeviceAttributes(StrEnum):
     progress = "progress"
 
 
-class MideaEADevice(MiedaDevice):
+class TaichuanEADevice(MiedaDevice):
     _mode_list = [
         "smart", "reserve", "cook_rice", "fast_cook_rice", "standard_cook_rice",
         "gruel", "cook_congee", "stew_soup", "stewing", "heat_rice", "make_cake",
@@ -95,13 +95,13 @@ class MideaEADevice(MiedaDevice):
             if hasattr(message, str(status)):
                 value = getattr(message, str(status))
                 if status == DeviceAttributes.progress:
-                    if value < len(MideaEADevice._progress):
-                        self._attributes[status] = MideaEADevice._progress[value]
+                    if value < len(TaichuanEADevice._progress):
+                        self._attributes[status] = TaichuanEADevice._progress[value]
                     else:
                         self._attributes[status] = "Unknown"
                 elif status == DeviceAttributes.mode:
-                    if value < len(MideaEADevice._mode_list):
-                        self._attributes[status] = MideaEADevice._mode_list[value]
+                    if value < len(TaichuanEADevice._mode_list):
+                        self._attributes[status] = TaichuanEADevice._mode_list[value]
                     else:
                         self._attributes[status] = "Cloud"
                 else:
@@ -113,5 +113,5 @@ class MideaEADevice(MiedaDevice):
         pass
 
 
-class MideaAppliance(MideaEADevice):
+class TaichuanAppliance(TaichuanEADevice):
     pass

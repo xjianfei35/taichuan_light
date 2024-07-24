@@ -22,7 +22,7 @@ class DeviceAttributes(StrEnum):
     power = "power"
 
 
-class Midea13Device(MiedaDevice):
+class Taichuan13Device(MiedaDevice):
     _effects = ["Manual", "Living", "Reading", "Mildly", "Cinema", "Night"]
 
     def __init__(
@@ -62,18 +62,18 @@ class Midea13Device(MiedaDevice):
 
     @property
     def effects(self):
-        return Midea13Device._effects
+        return Taichuan13Device._effects
 
     @property
     def color_temp_range(self):
         return self._color_temp_range
 
-    def kelvin_to_midea(self, kelvin):
+    def kelvin_to_taichuan(self, kelvin):
         return round((kelvin - self._color_temp_range[0]) /
         (self._color_temp_range[1] - self._color_temp_range[0]) * 255)
 
-    def midea_to_kelvin(self, midea):
-        return round((self._color_temp_range[1] - self._color_temp_range[0]) / 255 * midea) + \
+    def taichuan_to_kelvin(self, taichuan):
+        return round((self._color_temp_range[1] - self._color_temp_range[0]) / 255 * taichuan) + \
             self._color_temp_range[0]
 
     def build_query(self):
@@ -92,9 +92,9 @@ class Midea13Device(MiedaDevice):
                 if hasattr(message, str(status)):
                     value = getattr(message, str(status))
                     if status == DeviceAttributes.effect:
-                        self._attributes[status] = Midea13Device._effects[value]
+                        self._attributes[status] = Taichuan13Device._effects[value]
                     elif status == DeviceAttributes.color_temperature:
-                        self._attributes[status] = self.midea_to_kelvin(value)
+                        self._attributes[status] = self.taichuan_to_kelvin(value)
                     else:
                         self._attributes[status] = value
                     new_status[str(status)] = self._attributes[status]
@@ -107,9 +107,9 @@ class Midea13Device(MiedaDevice):
                     DeviceAttributes.power]:
             message = MessageSet(self._protocol_version)
             if attr == DeviceAttributes.effect and value in self._effects:
-                setattr(message, str(attr), Midea13Device._effects.index(value))
+                setattr(message, str(attr), Taichuan13Device._effects.index(value))
             elif attr == DeviceAttributes.color_temperature:
-                setattr(message, str(attr), self.kelvin_to_midea(value))
+                setattr(message, str(attr), self.kelvin_to_taichuan(value))
             else:
                 setattr(message, str(attr), value)
             self.build_send(message)
@@ -126,5 +126,5 @@ class Midea13Device(MiedaDevice):
             self.update_all({"color_temp_range": self._color_temp_range})
 
 
-class MideaAppliance(Midea13Device):
+class TaichuanAppliance(Taichuan13Device):
     pass

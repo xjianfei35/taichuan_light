@@ -42,7 +42,7 @@ class DeviceAttributes(StrEnum):
     bright = "bright"
 
 
-class MideaE1Device(MiedaDevice):
+class TaichuanE1Device(MiedaDevice):
     def __init__(
             self,
             name: str,
@@ -164,5 +164,5 @@ class MideaE1Device(MiedaDevice):
             self.build_send(message)
 
 
-class MideaAppliance(MideaE1Device):
+class TaichuanAppliance(TaichuanE1Device):
     pass

@@ -23,7 +23,7 @@ class DeviceAttributes(StrEnum):
     current_temperature = "current_temperature"
 
 
-class Midea40Device(MiedaDevice):
+class Taichuan40Device(MiedaDevice):
     _directions = ["60", "70", "80", "90", "100", "Oscillate"]
 
     def __init__(
@@ -62,19 +62,19 @@ class Midea40Device(MiedaDevice):
 
     @property
     def directions(self):
-        return Midea40Device._directions
+        return Taichuan40Device._directions
 
     @staticmethod
-    def _convert_to_midea_direction(direction):
+    def _convert_to_taichuan_direction(direction):
         if direction == "Oscillate":
             result = 0xFD
         else:
-            result = Midea40Device._directions.index(direction) * 10 + 60 \
-                if direction in Midea40Device._directions else 0xFD
+            result = Taichuan40Device._directions.index(direction) * 10 + 60 \
+                if direction in Taichuan40Device._directions else 0xFD
         return result
 
     @staticmethod
-    def _convert_from_midea_direction(direction):
+    def _convert_from_taichuan_direction(direction):
         if direction > 100 or direction < 60:
             result = 5
         else:
@@ -93,8 +93,8 @@ class Midea40Device(MiedaDevice):
             if hasattr(message, str(status)):
                 value = getattr(message, str(status))
                 if status == DeviceAttributes.direction:
-                    self._attributes[status] = Midea40Device._directions[
-                        self._convert_from_midea_direction(value)
+                    self._attributes[status] = Taichuan40Device._directions[
+                        self._convert_from_taichuan_direction(value)
                     ]
                 else:
                     self._attributes[status] = value
@@ -113,9 +113,9 @@ class Midea40Device(MiedaDevice):
             message.ventilation = self._attributes[DeviceAttributes.ventilation]
             message.smelly_sensor = self._attributes[DeviceAttributes.smelly_sensor]
             message.fan_speed = self._attributes[DeviceAttributes.fan_speed]
-            message.direction = self._convert_to_midea_direction(self._attributes[DeviceAttributes.direction])
+            message.direction = self._convert_to_taichuan_direction(self._attributes[DeviceAttributes.direction])
             if attr == DeviceAttributes.direction:
-                message.direction = self._convert_to_midea_direction(value)
+                message.direction = self._convert_to_taichuan_direction(value)
             elif attr == DeviceAttributes.ventilation and message.fan_speed == 2:
                 message.fan_speed = 1
                 message.ventilation = value
@@ -124,5 +124,5 @@ class Midea40Device(MiedaDevice):
             self.build_send(message)
 
 
-class MideaAppliance(Midea40Device):
+class TaichuanAppliance(Taichuan40Device):
     pass

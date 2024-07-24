@@ -35,7 +35,7 @@ class DeviceAttributes(StrEnum):
     error_code = "error_code"
 
 
-class MideaCEDevice(MiedaDevice):
+class TaichuanCEDevice(MiedaDevice):
     _modes = [
         "Normal", "Sleep mode", "ECO mode"
     ]
@@ -155,5 +155,5 @@ class MideaCEDevice(MiedaDevice):
             self.update_all({"speed_count": self._speed_count})
 
 
-class MideaAppliance(MideaCEDevice):
+class TaichuanAppliance(TaichuanCEDevice):
     pass

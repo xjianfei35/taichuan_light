@@ -22,7 +22,7 @@
                     "account": "Fiók",
                     "password": "Jelszó"
                 },
-                "description": "Jelentkezzen be és tárolja el Midea-fiókját, kizárólag a készülékei információinak a megszerzéséhez.\nAz összes készülékének beállítása után eltávolíthatja ezt a konfigurációt.",
+                "description": "Jelentkezzen be és tárolja el Taichuan-fiókját, kizárólag a készülékei információinak a megszerzéséhez.\nAz összes készülékének beállítása után eltávolíthatja ezt a konfigurációt.",
                 "title": "Bejelentkezés"
             },
             "discovery": {

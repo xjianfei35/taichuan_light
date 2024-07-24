@@ -22,7 +22,7 @@ class DeviceAttributes(StrEnum):
     time_remaining = "time_remaining"
 
 
-class MideaDADevice(MiedaDevice):
+class TaichuanDADevice(MiedaDevice):
     def __init__(
             self,
             name: str,
@@ -85,5 +85,5 @@ class MideaDADevice(MiedaDevice):
             self.build_send(message)
 
 
-class MideaAppliance(MideaDADevice):
+class TaichuanAppliance(TaichuanDADevice):
     pass

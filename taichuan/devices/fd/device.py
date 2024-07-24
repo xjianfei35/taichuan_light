@@ -26,7 +26,7 @@ class DeviceAttributes(StrEnum):
     disinfect = "disinfect"
 
 
-class MideaFDDevice(MiedaDevice):
+class TaichuanFDDevice(MiedaDevice):
     _modes = [
         "Manual", "Auto", "Continuous", "Living-Room", "Bed-Room", "Kitchen", "Sleep"
     ]
@@ -78,13 +78,13 @@ class MideaFDDevice(MiedaDevice):
                 DeviceAttributes.disinfect: None,
             })
         if self.subtype > 5:
-            self._speeds = MideaFDDevice._speeds_new
+            self._speeds = TaichuanFDDevice._speeds_new
         else:
-            self._speeds = MideaFDDevice._speeds_old
+            self._speeds = TaichuanFDDevice._speeds_old
 
     @property
     def modes(self):
-        return list(MideaFDDevice._modes)
+        return list(TaichuanFDDevice._modes)
 
     @property
     def fan_speeds(self):
@@ -92,7 +92,7 @@ class MideaFDDevice(MiedaDevice):
 
     @property
     def screen_displays(self):
-        return list(MideaFDDevice._screen_displays.values())
+        return list(TaichuanFDDevice._screen_displays.values())
 
     @property
     def detect_modes(self):
@@ -110,8 +110,8 @@ class MideaFDDevice(MiedaDevice):
             if hasattr(message, str(status)):
                 value = getattr(message, str(status))
                 if status == DeviceAttributes.mode:
-                    if value <= len(MideaFDDevice._modes):
-                        self._attributes[status] = MideaFDDevice._modes[value - 1]
+                    if value <= len(TaichuanFDDevice._modes):
+                        self._attributes[status] = TaichuanFDDevice._modes[value - 1]
                     else:
                         self._attributes[status] = None
                 elif status == DeviceAttributes.fan_speed:
@@ -120,8 +120,8 @@ class MideaFDDevice(MiedaDevice):
                     else:
                         self._attributes[status] = None
                 elif status == DeviceAttributes.screen_display:
-                    if value in MideaFDDevice._screen_displays.keys():
-                        self._attributes[status] = MideaFDDevice._screen_displays.get(value)
+                    if value in TaichuanFDDevice._screen_displays.keys():
+                        self._attributes[status] = TaichuanFDDevice._screen_displays.get(value)
                     else:
                         self._attributes[status] = None
                 else:
@@ -135,8 +135,8 @@ class MideaFDDevice(MiedaDevice):
         message.prompt_tone = self._attributes[DeviceAttributes.prompt_tone]
         message.screen_display = self._attributes[DeviceAttributes.screen_display]
         message.disinfect = self._attributes[DeviceAttributes.disinfect]
-        if self._attributes[DeviceAttributes.mode] in MideaFDDevice._modes:
-            message.mode = MideaFDDevice._modes.index(self._attributes[DeviceAttributes.mode]) + 1
+        if self._attributes[DeviceAttributes.mode] in TaichuanFDDevice._modes:
+            message.mode = TaichuanFDDevice._modes.index(self._attributes[DeviceAttributes.mode]) + 1
         else:
             message.mode = 1
         message.fan_speed = 40 if self._attributes[DeviceAttributes.fan_speed] is None else \
@@ -144,7 +144,7 @@ class MideaFDDevice(MiedaDevice):
                 self._attributes[DeviceAttributes.fan_speed]
             )]
         message.screen_display = 0 if self._attributes[DeviceAttributes.screen_display] is None else \
-            list(MideaFDDevice._screen_displays.keys())[list(MideaFDDevice._screen_displays.values()).index(
+            list(TaichuanFDDevice._screen_displays.keys())[list(TaichuanFDDevice._screen_displays.values()).index(
                 self._attributes[DeviceAttributes.screen_display]
             )]
         return message
@@ -156,17 +156,17 @@ class MideaFDDevice(MiedaDevice):
         else:
             message = self.make_message_set()
             if attr == DeviceAttributes.mode:
-                if value in MideaFDDevice._modes:
-                    message.mode = MideaFDDevice._modes.index(value) + 1
+                if value in TaichuanFDDevice._modes:
+                    message.mode = TaichuanFDDevice._modes.index(value) + 1
             elif attr == DeviceAttributes.fan_speed:
                 if value in self._speeds.values():
                     message.fan_speed = list(self._speeds.keys())[
                         list(self._speeds.values()).index(value)
                     ]
             elif attr == DeviceAttributes.screen_display:
-                if value in MideaFDDevice._screen_displays.values():
-                    message.screen_display = list(MideaFDDevice._screen_displays.keys())[
-                        list(MideaFDDevice._screen_displays.values()).index(value)
+                if value in TaichuanFDDevice._screen_displays.values():
+                    message.screen_display = list(TaichuanFDDevice._screen_displays.keys())[
+                        list(TaichuanFDDevice._screen_displays.values()).index(value)
                     ]
                 elif not value:
                     message.screen_display = 7
@@ -175,5 +175,5 @@ class MideaFDDevice(MiedaDevice):
             self.build_send(message)
 
 
-class MideaAppliance(MideaFDDevice):
+class TaichuanAppliance(TaichuanFDDevice):
     pass

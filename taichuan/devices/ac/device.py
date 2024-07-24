@@ -56,7 +56,7 @@ class DeviceAttributes(StrEnum):
     realtime_power = "realtime_power"
 
 
-class MideaACDevice(MiedaDevice):
+class TaichuanACDevice(MiedaDevice):
     _fresh_air_fan_speeds = {
         0: "Off", 20: "Silent", 40: "Low", 60: "Medium", 80: "High", 100: "Full"
     }
@@ -137,7 +137,7 @@ class MideaACDevice(MiedaDevice):
 
     @property
     def fresh_air_fan_speeds(self):
-        return list(MideaACDevice._fresh_air_fan_speeds.values())
+        return list(TaichuanACDevice._fresh_air_fan_speeds.values())
 
     def build_query(self):
         if self._used_subprotocol:
@@ -172,7 +172,7 @@ class MideaACDevice(MiedaDevice):
                 new_status[str(status)] = self._attributes[status]
         if has_fresh_air:
             if self._attributes[DeviceAttributes.fresh_air_power]:
-                for k, v in MideaACDevice._fresh_air_fan_speeds_rev.items():
+                for k, v in TaichuanACDevice._fresh_air_fan_speeds_rev.items():
                     if self._attributes[DeviceAttributes.fresh_air_fan_speed] > k:
                         break
                     else:
@@ -270,9 +270,9 @@ class MideaACDevice(MiedaDevice):
                         [value, self._attributes[DeviceAttributes.fresh_air_fan_speed]]
                     )
             elif attr == DeviceAttributes.fresh_air_mode:
-                if value in MideaACDevice._fresh_air_fan_speeds.values():
-                    speed = list(MideaACDevice._fresh_air_fan_speeds.keys())[
-                        list(MideaACDevice._fresh_air_fan_speeds.values()).index(value)
+                if value in TaichuanACDevice._fresh_air_fan_speeds.values():
+                    speed = list(TaichuanACDevice._fresh_air_fan_speeds.keys())[
+                        list(TaichuanACDevice._fresh_air_fan_speeds.values()).index(value)
                     ]
                     fresh_air = [True, speed] if speed > 0 else \
                         [False, self._attributes[DeviceAttributes.fresh_air_fan_speed]]
@@ -348,5 +348,5 @@ class MideaACDevice(MiedaDevice):
             self.update_all({"temperature_step": self._temperature_step})
 
 
-class MideaAppliance(MideaACDevice):
+class TaichuanAppliance(TaichuanACDevice):
     pass

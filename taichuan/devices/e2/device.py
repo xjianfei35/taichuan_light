@@ -30,7 +30,7 @@ class DeviceAttributes(StrEnum):
     heating_power = "heating_power"
 
 
-class MideaE2Device(MiedaDevice):
+class TaichuanE2Device(MiedaDevice):
     def __init__(
             self,
             name: str,
@@ -127,5 +127,5 @@ class MideaE2Device(MiedaDevice):
             self.update_all({"old_protocol": self._old_protocol})
 
 
-class MideaAppliance(MideaE2Device):
+class TaichuanAppliance(TaichuanE2Device):
     pass

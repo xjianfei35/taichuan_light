@@ -27,7 +27,7 @@ class DeviceAttributes(StrEnum):
     target_temperature = "target_temperature"
 
 
-class MideaE3Device(MiedaDevice):
+class TaichuanE3Device(MiedaDevice):
     def __init__(
             self,
             name: str,
@@ -130,5 +130,5 @@ class MideaE3Device(MiedaDevice):
             self.update_all({"precision_halves": self._precision_halves})
 
 
-class MideaAppliance(MideaE3Device):
+class TaichuanAppliance(TaichuanE3Device):
     pass

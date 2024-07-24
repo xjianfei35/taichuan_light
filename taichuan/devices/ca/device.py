@@ -33,7 +33,7 @@ class DeviceAttributes(StrEnum):
     flex_zone_door = "flex_zone_door"
 
 
-class MideaCADevice(MiedaDevice):
+class TaichuanCADevice(MiedaDevice):
     def __init__(
             self,
             name: str,
@@ -96,5 +96,5 @@ class MideaCADevice(MiedaDevice):
         pass
 
 
-class MideaAppliance(MideaCADevice):
+class TaichuanAppliance(TaichuanCADevice):
     pass

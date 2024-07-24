@@ -26,7 +26,7 @@ class DeviceAttributes(StrEnum):
     bathing_leaving_temperature = "bathing_leaving_temperature"
 
 
-class MideaE6Device(MiedaDevice):
+class TaichuanE6Device(MiedaDevice):
     def __init__(
             self,
             name: str,
@@ -87,5 +87,5 @@ class MideaE6Device(MiedaDevice):
             self.build_send(message)
 
 
-class MideaAppliance(MideaE6Device):
+class TaichuanAppliance(TaichuanE6Device):
     pass

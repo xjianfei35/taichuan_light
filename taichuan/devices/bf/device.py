@@ -22,7 +22,7 @@ class DeviceAttributes(StrEnum):
     water_shortage = "water_shortage"
 
 
-class MideaBFDevice(MiedaDevice):
+class TaichuanBFDevice(MiedaDevice):
     _status = {
         0x01: "PowerSave", 0x02: "Standby", 0x03: "Working",
         0x04: "Finished", 0x05: "Delay", 0x06: "Paused"
@@ -73,8 +73,8 @@ class MideaBFDevice(MiedaDevice):
             if hasattr(message, str(status)):
                 value = getattr(message, str(status))
                 if status == DeviceAttributes.status:
-                    if value in MideaBFDevice._status.keys():
-                        self._attributes[DeviceAttributes.status] = MideaBFDevice._status.get(value)
+                    if value in TaichuanBFDevice._status.keys():
+                        self._attributes[DeviceAttributes.status] = TaichuanBFDevice._status.get(value)
                     else:
                         self._attributes[DeviceAttributes.status] = "Unknown"
                 else:
@@ -86,5 +86,5 @@ class MideaBFDevice(MiedaDevice):
         pass
 
 
-class MideaAppliance(MideaBFDevice):
+class TaichuanAppliance(TaichuanBFDevice):
     pass

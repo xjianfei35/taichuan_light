@@ -34,7 +34,7 @@ class DeviceAttributes(StrEnum):
     detergent = "detergent"
     
 
-class MideaDADevice(MiedaDevice):
+class TaichuanDADevice(MiedaDevice):
     def __init__(
             self,
             name: str,
@@ -137,5 +137,5 @@ class MideaDADevice(MiedaDevice):
             message.washing_data = self._attributes[DeviceAttributes.washing_data]
             self.build_send(message)
 
-class MideaAppliance(MideaDADevice):
+class TaichuanAppliance(TaichuanDADevice):
     pass

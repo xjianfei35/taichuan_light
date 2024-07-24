@@ -29,7 +29,7 @@ class DeviceAttributes(StrEnum):
     current_temperature = "current_temperature"
 
 
-class MideaA1Device(MiedaDevice):
+class TaichuanA1Device(MiedaDevice):
     _modes = [
         "Manual", "Continuous", "Auto", "Clothes-Dry", "Shoes-Dry"
     ]
@@ -82,15 +82,15 @@ class MideaA1Device(MiedaDevice):
 
     @property
     def modes(self):
-        return MideaA1Device._modes
+        return TaichuanA1Device._modes
 
     @property
     def fan_speeds(self):
-        return list(MideaA1Device._speeds.values())
+        return list(TaichuanA1Device._speeds.values())
 
     @property
     def water_level_sets(self):
-        return MideaA1Device._water_level_sets
+        return TaichuanA1Device._water_level_sets
 
     def build_query(self):
         return [
@@ -106,13 +106,13 @@ class MideaA1Device(MiedaDevice):
             if hasattr(message, str(status)):
                 value = getattr(message, str(status))
                 if status == DeviceAttributes.mode:
-                    if value <= len(MideaA1Device._modes):
-                        self._attributes[status] = MideaA1Device._modes[value - 1]
+                    if value <= len(TaichuanA1Device._modes):
+                        self._attributes[status] = TaichuanA1Device._modes[value - 1]
                     else:
                         self._attributes[status] = None
                 elif status == DeviceAttributes.fan_speed:
-                    if value in MideaA1Device._speeds.keys():
-                        self._attributes[status] = MideaA1Device._speeds.get(value)
+                    if value in TaichuanA1Device._speeds.keys():
+                        self._attributes[status] = TaichuanA1Device._speeds.get(value)
                     else:
                         self._attributes[status] = None
                 elif status == DeviceAttributes.water_level_set:
@@ -132,12 +132,12 @@ class MideaA1Device(MiedaDevice):
         message.power = self._attributes[DeviceAttributes.power]
         message.prompt_tone = self._attributes[DeviceAttributes.prompt_tone]
         message.child_lock = self._attributes[DeviceAttributes.child_lock]
-        if self._attributes[DeviceAttributes.mode] in MideaA1Device._modes:
-            message.mode = MideaA1Device._modes.index(self._attributes[DeviceAttributes.mode]) + 1
+        if self._attributes[DeviceAttributes.mode] in TaichuanA1Device._modes:
+            message.mode = TaichuanA1Device._modes.index(self._attributes[DeviceAttributes.mode]) + 1
         else:
             message.mode = 1
         message.fan_speed = 40 if self._attributes[DeviceAttributes.fan_speed] is None else \
-            list(MideaA1Device._speeds.keys())[list(MideaA1Device._speeds.values()).index(
+            list(TaichuanA1Device._speeds.keys())[list(TaichuanA1Device._speeds.values()).index(
                 self._attributes[DeviceAttributes.fan_speed]
             )]
         message.target_humidity = self._attributes[DeviceAttributes.target_humidity]
@@ -153,20 +153,20 @@ class MideaA1Device(MiedaDevice):
         else:
             message = self.make_message_set()
             if attr == DeviceAttributes.mode:
-                if value in MideaA1Device._modes:
-                    message.mode = MideaA1Device._modes.index(value) + 1
+                if value in TaichuanA1Device._modes:
+                    message.mode = TaichuanA1Device._modes.index(value) + 1
             elif attr == DeviceAttributes.fan_speed:
-                if value in MideaA1Device._speeds.values():
-                    message.fan_speed = list(MideaA1Device._speeds.keys())[
-                        list(MideaA1Device._speeds.values()).index(value)
+                if value in TaichuanA1Device._speeds.values():
+                    message.fan_speed = list(TaichuanA1Device._speeds.keys())[
+                        list(TaichuanA1Device._speeds.values()).index(value)
                     ]
             elif attr == DeviceAttributes.water_level_set:
-                if value in MideaA1Device._water_level_sets:
+                if value in TaichuanA1Device._water_level_sets:
                     message.water_level_set = int(value)
             else:
                 setattr(message, str(attr), value)
             self.build_send(message)
 
 
-class MideaAppliance(MideaA1Device):
+class TaichuanAppliance(TaichuanA1Device):
     pass

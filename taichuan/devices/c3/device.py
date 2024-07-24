@@ -58,7 +58,7 @@ class DeviceAttributes(StrEnum):
     error_code = "error_code"
 
 
-class MideaC3Device(MiedaDevice):
+class TaichuanC3Device(MiedaDevice):
     def __init__(
             self,
             name: str,
@@ -254,5 +254,5 @@ class MideaC3Device(MiedaDevice):
         self.build_send(message)
 
 
-class MideaAppliance(MideaC3Device):
+class TaichuanAppliance(TaichuanC3Device):
     pass

@@ -6,7 +6,7 @@ import base64
 from threading import Lock
 from aiohttp import ClientSession
 from secrets import token_hex
-from .security import CloudSecurity, MeijuCloudSecurity, MSmartCloudSecurity, MideaAirSecurity
+from .security import CloudSecurity, MeijuCloudSecurity, MSmartCloudSecurity, TaichuanAirSecurity
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -28,20 +28,20 @@ clouds = {
         "hmac_key": bytes.fromhex(format(117390035944627627450677220413733956185864939010425, 'x')).decode(),
         "api_url": "https://mp-prod.appsmb.com/mas/v5/app/proxy?alias=",
     },
-    "Midea Air": {
-        "class_name": "MideaAirCloud",
+    "Taichuan Air": {
+        "class_name": "TaichuanAirCloud",
         "app_id": "1117",
         "app_key": "ff0cf6f5f0c3471de36341cab3f7a9af",
         "api_url": "https://mapp.appsmb.com",
     },
     "NetHome Plus": {
-        "class_name": "MideaAirCloud",
+        "class_name": "TaichuanAirCloud",
         "app_id": "1017",
         "app_key": "3742e9e5842d4ad59c2db887e12449f9",
         "api_url": "https://mapp.appsmb.com",
     },
     "Ariston Clima": {
-        "class_name": "MideaAirCloud",
+        "class_name": "TaichuanAirCloud",
         "app_id": "1005",
         "app_key": "434a209a5ce141c3b726de067835d7f0",
         "api_url": "https://mapp.appsmb.com",
@@ -57,7 +57,7 @@ default_keys = {
 }
 
 
-class MideaCloud:
+class TaichuanCloud:
     def __init__(
             self,
             session: ClientSession,
@@ -118,11 +118,11 @@ class MideaCloud:
                 with self._api_lock:
                     r = await self._session.request("POST", url, headers=header, data=dump_data, timeout=10)
                     raw = await r.read()
-                    _LOGGER.debug(f"Midea cloud API url: {url}, data: {data}, response: {raw}")
+                    _LOGGER.debug(f"Taichuan cloud API url: {url}, data: {data}, response: {raw}")
                     response = json.loads(raw)
                     break
             except Exception as e:
-                _LOGGER.warning(f"Midea cloud API error, url: {url}, error: {repr(e)}")
+                _LOGGER.warning(f"Taichuan cloud API error, url: {url}, error: {repr(e)}")
         if int(response["code"]) == 0 and "data" in response:
             return response["data"]
         return None
@@ -186,7 +186,7 @@ class MideaCloud:
         raise NotImplementedError()
 
 
-class MeijuCloud(MideaCloud):
+class MeijuCloud(TaichuanCloud):
     def __init__(
             self,
             cloud_name: str,
@@ -353,7 +353,7 @@ class MeijuCloud(MideaCloud):
         return fnm
 
 
-class MSmartHomeCloud(MideaCloud):
+class MSmartHomeCloud(TaichuanCloud):
     def __init__(
             self,
             cloud_name: str,
@@ -512,7 +512,7 @@ class MSmartHomeCloud(MideaCloud):
         return fnm
 
 
-class MideaAirCloud(MideaCloud):
+class TaichuanAirCloud(TaichuanCloud):
     def __init__(
             self,
             cloud_name: str,
@@ -522,7 +522,7 @@ class MideaAirCloud(MideaCloud):
     ):
         super().__init__(
             session=session,
-            security=MideaAirSecurity(
+            security=TaichuanAirSecurity(
                 login_key=clouds[cloud_name]["app_key"]
             ),
             app_id=clouds[cloud_name]["app_id"],
@@ -579,11 +579,11 @@ class MideaAirCloud(MideaCloud):
                 with self._api_lock:
                     r = await self._session.request("POST", url, headers=header, data=data, timeout=10)
                     raw = await r.read()
-                    _LOGGER.debug(f"Midea cloud API url: {url}, data: {data}, response: {raw}")
+                    _LOGGER.debug(f"Taichuan cloud API url: {url}, data: {data}, response: {raw}")
                     response = json.loads(raw)
                     break
             except Exception as e:
-                _LOGGER.warning(f"Midea cloud API error, url: {url}, error: {repr(e)}")
+                _LOGGER.warning(f"Taichuan cloud API error, url: {url}, error: {repr(e)}")
         if int(response["errorCode"]) == 0 and "result" in response:
             return response["result"]
         return None
@@ -635,7 +635,7 @@ class MideaAirCloud(MideaCloud):
         return None
 
 
-def get_taichuan_cloud(cloud_name: str, session: ClientSession, account: str, password: str) -> MideaCloud | None:
+def get_taichuan_cloud(cloud_name: str, session: ClientSession, account: str, password: str) -> TaichuanCloud | None:
     cloud = None
     if cloud_name in clouds.keys():
         cloud = globals()[clouds[cloud_name]["class_name"]](

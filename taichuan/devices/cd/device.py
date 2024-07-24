@@ -27,7 +27,7 @@ class DeviceAttributes(StrEnum):
     compressor_status = "compressor_status"
 
 
-class MideaCDDevice(MiedaDevice):
+class TaichuanCDDevice(MiedaDevice):
     _modes = ["Energy-save", "Standard", "Dual", "Smart"]
 
     def __init__(
@@ -77,7 +77,7 @@ class MideaCDDevice(MiedaDevice):
 
     @property
     def preset_modes(self):
-        return MideaCDDevice._modes
+        return TaichuanCDDevice._modes
 
     def build_query(self):
         return [MessageQuery(self._protocol_version)]
@@ -92,7 +92,7 @@ class MideaCDDevice(MiedaDevice):
             if hasattr(message, str(status)):
                 value = getattr(message, str(status))
                 if status == DeviceAttributes.mode:
-                    self._attributes[status] = MideaCDDevice._modes[value]
+                    self._attributes[status] = TaichuanCDDevice._modes[value]
                 else:
                     self._attributes[status] = value
                 new_status[str(status)] = self._attributes[status]
@@ -102,12 +102,12 @@ class MideaCDDevice(MiedaDevice):
         if attr in [DeviceAttributes.mode, DeviceAttributes.power, DeviceAttributes.target_temperature]:
             message = MessageSet(self._protocol_version)
             message.fields = self._fields
-            message.mode = MideaCDDevice._modes.index(self._attributes[DeviceAttributes.mode])
+            message.mode = TaichuanCDDevice._modes.index(self._attributes[DeviceAttributes.mode])
             message.power = self._attributes[DeviceAttributes.power]
             message.target_temperature = self._attributes[DeviceAttributes.target_temperature]
             if attr == DeviceAttributes.mode:
-                if value in MideaCDDevice._modes:
-                    setattr(message, str(attr), MideaCDDevice._modes.index(value))
+                if value in TaichuanCDDevice._modes:
+                    setattr(message, str(attr), TaichuanCDDevice._modes.index(value))
             else:
                 setattr(message, str(attr), value)
             self.build_send(message)
@@ -124,5 +124,5 @@ class MideaCDDevice(MiedaDevice):
             self.update_all({"temperature_step": self._temperature_step})
 
 
-class MideaAppliance(MideaCDDevice):
+class TaichuanAppliance(TaichuanCDDevice):
     pass

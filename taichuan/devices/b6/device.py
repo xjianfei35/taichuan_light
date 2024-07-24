@@ -24,7 +24,7 @@ class DeviceAttributes(StrEnum):
     cleaning_reminder = "cleaning_reminder"
 
 
-class MideaB6Device(MiedaDevice):
+class TaichuanB6Device(MiedaDevice):
     def __init__(
             self,
             name: str,
@@ -156,5 +156,5 @@ class MideaB6Device(MiedaDevice):
                 _LOGGER.error(f"[{self.device_id}] Set customize error: {repr(e)}")
 
 
-class MideaAppliance(MideaB6Device):
+class TaichuanAppliance(TaichuanB6Device):
     pass

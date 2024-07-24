@@ -37,7 +37,7 @@ class DeviceAttributes(StrEnum):
     lock = "lock"
 
 
-class MideaB2Device(MiedaDevice):
+class TaichuanB2Device(MiedaDevice):
     _status = {
         0x00: "Off", 0x01: "Standby", 0x02: "Working",
         0x03: "Delay", 0x04: "Finished"
@@ -107,8 +107,8 @@ class MideaB2Device(MiedaDevice):
                     DeviceAttributes.middle_compartment_status,
                     DeviceAttributes.bottom_compartment_status
                 ]:
-                    if value in MideaB2Device._status.keys():
-                        self._attributes[status] = MideaB2Device._status.get(value)
+                    if value in TaichuanB2Device._status.keys():
+                        self._attributes[status] = TaichuanB2Device._status.get(value)
                     else:
                         self._attributes[status] = None
                 else:
@@ -120,5 +120,5 @@ class MideaB2Device(MiedaDevice):
         pass
 
 
-class MideaAppliance(MideaB2Device):
+class TaichuanAppliance(TaichuanB2Device):
     pass

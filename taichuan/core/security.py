@@ -145,7 +145,7 @@ class MSmartCloudSecurity(CloudSecurity):
         self._aes_iv = self.aes_decrypt(encrypted_iv, tmp_key, tmp_iv).encode('ascii')
 
 
-class MideaAirSecurity(CloudSecurity):
+class TaichuanAirSecurity(CloudSecurity):
     def __init__(self, login_key):
         super().__init__(login_key, None, None)
 

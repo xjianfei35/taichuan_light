@@ -24,7 +24,7 @@ class DeviceAttributes(StrEnum):
     current_temperature = "current_temperature"
 
 
-class Midea26Device(MiedaDevice):
+class Taichuan26Device(MiedaDevice):
     _modes = ["Off", "Heat(high)", "Heat(low)", "Bath", "Blow", "Ventilation", "Dry"]
     _directions = ["60", "70", "80", "90", "100", "110", "120", "Oscillate"]
 
@@ -64,16 +64,16 @@ class Midea26Device(MiedaDevice):
         self._fields = {}
 
     @staticmethod
-    def _convert_to_midea_direction(direction):
+    def _convert_to_taichuan_direction(direction):
         if direction == "Oscillate":
             result = 0xFD
         else:
-            result = Midea26Device._directions.index(direction) * 10 + 60 \
-                if direction in Midea26Device._directions else 0xFD
+            result = Taichuan26Device._directions.index(direction) * 10 + 60 \
+                if direction in Taichuan26Device._directions else 0xFD
         return result
 
     @staticmethod
-    def _convert_from_midea_direction(direction):
+    def _convert_from_taichuan_direction(direction):
         if direction > 120 or direction < 60:
             result = 7
         else:
@@ -82,11 +82,11 @@ class Midea26Device(MiedaDevice):
 
     @property
     def preset_modes(self):
-        return Midea26Device._modes
+        return Taichuan26Device._modes
 
     @property
     def directions(self):
-        return Midea26Device._directions
+        return Taichuan26Device._directions
 
     def build_query(self):
         return [MessageQuery(self._protocol_version)]
@@ -100,10 +100,10 @@ class Midea26Device(MiedaDevice):
             if hasattr(message, str(status)):
                 value = getattr(message, str(status))
                 if status == DeviceAttributes.mode:
-                    self._attributes[status] = Midea26Device._modes[value]
+                    self._attributes[status] = Taichuan26Device._modes[value]
                 elif status == DeviceAttributes.direction:
-                    self._attributes[status] = Midea26Device._directions[
-                        self._convert_from_midea_direction(value)
+                    self._attributes[status] = Taichuan26Device._directions[
+                        self._convert_from_taichuan_direction(value)
                     ]
                 else:
                     self._attributes[status] = value
@@ -120,8 +120,8 @@ class Midea26Device(MiedaDevice):
             message.fields = self._fields
             message.main_light = self._attributes[DeviceAttributes.main_light]
             message.night_light = self._attributes[DeviceAttributes.night_light]
-            message.mode = Midea26Device._modes.index(self._attributes[DeviceAttributes.mode])
-            message.direction = self._convert_to_midea_direction(self._attributes[DeviceAttributes.direction])
+            message.mode = Taichuan26Device._modes.index(self._attributes[DeviceAttributes.mode])
+            message.direction = self._convert_to_taichuan_direction(self._attributes[DeviceAttributes.direction])
             if attr in [
                 DeviceAttributes.main_light,
                 DeviceAttributes.night_light
@@ -130,11 +130,11 @@ class Midea26Device(MiedaDevice):
                 message.night_light = False
                 setattr(message, str(attr), value)
             elif attr == DeviceAttributes.mode:
-                message.mode = Midea26Device._modes.index(value)
+                message.mode = Taichuan26Device._modes.index(value)
             elif attr == DeviceAttributes.direction:
-                message.direction = self._convert_to_midea_direction(value)
+                message.direction = self._convert_to_taichuan_direction(value)
             self.build_send(message)
 
 
-class MideaAppliance(Midea26Device):
+class TaichuanAppliance(Taichuan26Device):
     pass
