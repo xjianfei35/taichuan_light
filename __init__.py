@@ -64,7 +64,7 @@ async def async_setup(hass: HomeAssistant, hass_config: dict):
         for attribute_name, attribute in device_entities.get("entities").items():
             if attribute.get("type") in EXTRA_SWITCH and attribute_name.value not in attributes:
                 attributes.append(attribute_name.value)
-    _LOGGER.info(f"in async_setup,attributes[{attributes}]")
+    _LOGGER.debug(f"in async_setup,attributes[{attributes}]")
     def service_set_attribute(service):
        """  device_id = service.data.get("device_id")
         attr = service.data.get("attribute")
@@ -124,9 +124,9 @@ async def async_setup(hass: HomeAssistant, hass_config: dict):
 
 
 async def async_setup_entry(hass: HomeAssistant, config_entry):
-    _LOGGER.info(f"in async_setup_entry")
+    _LOGGER.debug(f"in async_setup_entry")
     return True
-    """ device_type = config_entry.data.get(CONF_TYPE)
+    device_type = config_entry.data.get(CONF_TYPE)
     if device_type == CONF_ACCOUNT:
         return True
     name = config_entry.data.get(CONF_NAME)
@@ -177,10 +177,11 @@ async def async_setup_entry(hass: HomeAssistant, config_entry):
                 config_entry, platform))
         config_entry.add_update_listener(update_listener)
         return True
-    return False """
+    return False
 
 
 async def async_unload_entry(hass: HomeAssistant, config_entry):
+    return True
     device_type = config_entry.data.get(CONF_TYPE)
     if device_type == CONF_ACCOUNT:
         return True
