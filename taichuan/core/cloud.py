@@ -6,7 +6,7 @@ import base64
 from threading import Lock
 from aiohttp import ClientSession
 from secrets import token_hex
-from urlib.pasrse import quote
+from urllib.request import quote
 from .security import CloudSecurity, MeijuCloudSecurity, MSmartCloudSecurity, TaichuanAirSecurity
 
 _LOGGER = logging.getLogger(__name__)
@@ -216,7 +216,7 @@ class UCloud(TaichuanCloud):
                 self._expire_in = response["expire_in"] 
                 self._scope = response["scope"]
                 return True
-            else
+            else:
                 _LOGGER.error(f"login error,endpoint[{endpoint}],data[{data}]")
                 return False
 

@@ -28,5 +28,5 @@ def del_sub_dir(pdir,dir_name):
                 print("del dir",subdir_path)
                 del_dir(subdir_path)
 
-del_sub_dir("./test","tmp")                        
+del_sub_dir("./","__pycache__")                        
 #del_dir("./test/tmp")
