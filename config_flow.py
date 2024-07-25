@@ -37,7 +37,7 @@ import homeassistant.helpers.config_validation as cv
 from homeassistant.helpers.aiohttp_client import async_create_clientsession
 from .taichuan.core.discover import discover
 from .taichuan.core.cloud import get_taichuan_cloud
-from .taichuan.core.device import MiedaDevice
+from .taichuan.core.device import TaichuanDevice
 from .taichuan_device import TAICHUAN_DEVICES
 
 _LOGGER = logging.getLogger(__name__)
