@@ -408,6 +408,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
     def __init__(self, config_entry: config_entries.ConfigEntry):
         self._config_entry = config_entry
         self._device_type = config_entry.data.get(CONF_TYPE)
+        _LOGGER.debug(f"_device_type[{_self._device_type}]")
         if self._device_type is None:
             self._device_type = 0xac
         if CONF_SENSORS in self._config_entry.options:
