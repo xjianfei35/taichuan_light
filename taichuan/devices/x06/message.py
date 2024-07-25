@@ -6,10 +6,10 @@ from ...core.message import (
 )
 
 
-class Message26Base(MessageRequest):
+class Message06Base(MessageRequest):
     def __init__(self, protocol_version, message_type, body_type):
         super().__init__(
-            device_type=0x26,
+            device_type=0x06,
             protocol_version=protocol_version,
             message_type=message_type,
             body_type=body_type
@@ -20,7 +20,7 @@ class Message26Base(MessageRequest):
         raise NotImplementedError
 
 
-class MessageQuery(Message26Base):
+class MessageQuery(Message06Base):
     def __init__(self, protocol_version):
         super().__init__(
             protocol_version=protocol_version,
@@ -33,7 +33,7 @@ class MessageQuery(Message26Base):
         ])
 
 
-class MessageSet(Message26Base):
+class MessageSet(Message06Base):
     def __init__(self, protocol_version):
         super().__init__(
             protocol_version=protocol_version,
@@ -94,7 +94,7 @@ class MessageSet(Message26Base):
         ])
 
 
-class Message26Body(MessageBody):
+class Message06Body(MessageBody):
     def __init__(self, body):
         super().__init__(body)
         self.fields = {}
@@ -165,10 +165,10 @@ class Message26Body(MessageBody):
             self.direction = dry_direction
 
 
-class Message26Response(MessageResponse):
+class Message06Response(MessageResponse):
     def __init__(self, message):
         super().__init__(message)
         if self.message_type in [MessageType.set, MessageType.notify1, MessageType.query] and self.body_type == 0x01:
-            self.set_body(Message26Body(super().body))
+            self.set_body(Message06Body(super().body))
         self.set_attr()
 

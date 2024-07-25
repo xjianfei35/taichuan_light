@@ -14,7 +14,7 @@ from homeassistant.const import (
 )
 from homeassistant.components.binary_sensor import BinarySensorDeviceClass
 from homeassistant.components.sensor import SensorStateClass, SensorDeviceClass
-from .taichuan.devices.x26.device import DeviceAttributes as X26Attributes
+from .taichuan.devices.x06.device import DeviceAttributes as X06Attributes
 from .taichuan.devices.x34.device import DeviceAttributes as X34Attributes
 from .taichuan.devices.x40.device import DeviceAttributes as X40Attributes
 from .taichuan.devices.a1.device import DeviceAttributes as A1Attributes
@@ -50,13 +50,17 @@ from .taichuan.devices.fd.device import DeviceAttributes as FDAttributes
 
 
 TAICHUAN_DEVICES = {
-    0x13: {
+    0x06: {
         "name": "Light",
         "entities": {
             "light": {
                 "type": Platform.LIGHT,
+                "classify": 1,
                 "icon": "mdi:lightbulb",
-                "default": True
+                "default": True,
+                "roomId": None,
+                "name": None,
+                "ctrlId": None
             }
         }
     },

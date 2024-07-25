@@ -161,6 +161,9 @@ class TaichuanCloud:
     async def list_home(self) -> dict | None:
         return {1: "My home"}
 
+    async def list_dev(self)  ->dict | None:
+        raise NotImplementedError();
+
     async def list_appliances(self, home_id) -> dict | None:
         raise NotImplementedError()
 
@@ -187,6 +190,7 @@ class UCloud(TaichuanCloud):
             session: ClientSession,
             username: str,
             password: str,
+            deviceNum: str,
     ):
         super().__init__(
             session=session,
@@ -217,14 +221,32 @@ class UCloud(TaichuanCloud):
                 self._access_token_type = response["token_type"]
                 self._expire_in = response["expire_in"] 
                 self._scope = response["scope"]
+                _LOGGER.debug(f"response:[{response}]")
                 return True
             else:
                 _LOGGER.error(f"login error,endpoint[{endpoint}],data[{data}]")
                 return False
 
+    async def list_dev(self):
+        if response := await self._api_request(
+            endpoint="/smarthome/api/device",
+            data={}
+        ):
+            if(response["code"]==0):
+                datas={}
+                for data in response["data"]:
+                    datas.update({
+                        "data": data["data"]
+                        "type": data["type"]
+                    }) 
+                for data in datas:
+                    if(data["type"]==1):
+                        deviceNum = data["data"]["deviceNum"]
+
+
     async def list_home(self):
         if response := await self._api_request(
-            endpoint="/v1/homegroup/list/get",
+            endpoint="https://ucloud.taichuan.net/smarthome/api/v2/ctl/getDeviceSchemaList",
             data={}
         ):
             homes = {}
@@ -239,6 +261,7 @@ class UCloud(TaichuanCloud):
         data = {
             "homegroupId": home_id
         }
+
         if response := await self._api_request(
             endpoint="/v1/appliance/home/list/get",
             data=data

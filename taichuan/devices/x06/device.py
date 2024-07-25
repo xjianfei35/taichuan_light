@@ -24,7 +24,7 @@ class DeviceAttributes(StrEnum):
     current_temperature = "current_temperature"
 
 
-class Taichuan26Device(MiedaDevice):
+class Taichuan06Device(TaichuanDevice):
     _modes = ["Off", "Heat(high)", "Heat(low)", "Bath", "Blow", "Ventilation", "Dry"]
     _directions = ["60", "70", "80", "90", "100", "110", "120", "Oscillate"]
 
@@ -39,12 +39,13 @@ class Taichuan26Device(MiedaDevice):
             protocol: int,
             model: str,
             subtype: int,
+            ctrlId: int,
             customize: str
     ):
         super().__init__(
             name=name,
             device_id=device_id,
-            device_type=0x26,
+            device_type=0x06,
             ip_address=ip_address,
             port=port,
             token=token,
@@ -52,6 +53,7 @@ class Taichuan26Device(MiedaDevice):
             protocol=protocol,
             model=model,
             subtype=subtype,
+            ctrlId=ctrlId,
             attributes={
                 DeviceAttributes.main_light: False,
                 DeviceAttributes.night_light: False,
@@ -68,8 +70,8 @@ class Taichuan26Device(MiedaDevice):
         if direction == "Oscillate":
             result = 0xFD
         else:
-            result = Taichuan26Device._directions.index(direction) * 10 + 60 \
-                if direction in Taichuan26Device._directions else 0xFD
+            result = Taichuan06Device._directions.index(direction) * 10 + 60 \
+                if direction in Taichuan06Device._directions else 0xFD
         return result
 
     @staticmethod
@@ -82,17 +84,17 @@ class Taichuan26Device(MiedaDevice):
 
     @property
     def preset_modes(self):
-        return Taichuan26Device._modes
+        return Taichuan06Device._modes
 
     @property
     def directions(self):
-        return Taichuan26Device._directions
+        return Taichuan06Device._directions
 
     def build_query(self):
         return [MessageQuery(self._protocol_version)]
 
     def process_message(self, msg):
-        message = Message26Response(msg)
+        message = Message06Response(msg)
         _LOGGER.debug(f"[{self.device_id}] Received: {message}")
         new_status = {}
         self._fields = getattr(message, "fields")
@@ -100,9 +102,9 @@ class Taichuan26Device(MiedaDevice):
             if hasattr(message, str(status)):
                 value = getattr(message, str(status))
                 if status == DeviceAttributes.mode:
-                    self._attributes[status] = Taichuan26Device._modes[value]
+                    self._attributes[status] = Taichuan06Device._modes[value]
                 elif status == DeviceAttributes.direction:
-                    self._attributes[status] = Taichuan26Device._directions[
+                    self._attributes[status] = Taichuan06Device._directions[
                         self._convert_from_taichuan_direction(value)
                     ]
                 else:
@@ -120,7 +122,7 @@ class Taichuan26Device(MiedaDevice):
             message.fields = self._fields
             message.main_light = self._attributes[DeviceAttributes.main_light]
             message.night_light = self._attributes[DeviceAttributes.night_light]
-            message.mode = Taichuan26Device._modes.index(self._attributes[DeviceAttributes.mode])
+            message.mode = Taichuan06Device._modes.index(self._attributes[DeviceAttributes.mode])
             message.direction = self._convert_to_taichuan_direction(self._attributes[DeviceAttributes.direction])
             if attr in [
                 DeviceAttributes.main_light,
@@ -130,11 +132,11 @@ class Taichuan26Device(MiedaDevice):
                 message.night_light = False
                 setattr(message, str(attr), value)
             elif attr == DeviceAttributes.mode:
-                message.mode = Taichuan26Device._modes.index(value)
+                message.mode = Taichuan06Device._modes.index(value)
             elif attr == DeviceAttributes.direction:
                 message.direction = self._convert_to_taichuan_direction(value)
             self.build_send(message)
 
 
-class TaichuanAppliance(Taichuan26Device):
+class TaichuanAppliance(Taichuan06Device):
     pass
