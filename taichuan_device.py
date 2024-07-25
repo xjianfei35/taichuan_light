@@ -51,10 +51,10 @@ from .taichuan.devices.fd.device import DeviceAttributes as FDAttributes
 
 TAICHUAN_DEVICES = {
     0x06: {
-        "name": "Light",
+        "name": "Main Light",
         "entities": {
             "light": {
-                "type": Platform.LIGHT,
+                "type": Platform.Switch,
                 "classify": 1,
                 "icon": "mdi:lightbulb",
                 "default": True,
