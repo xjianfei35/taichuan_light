@@ -74,35 +74,35 @@ TAICHUAN_DEVICES = {
                 "unit": TEMP_CELSIUS,
                 "state_class": SensorStateClass.MEASUREMENT
             },
-            X26Attributes.current_humidity: {
+            X06Attributes.current_humidity: {
                 "type": Platform.SENSOR,
                 "name": "Current Humidity",
                 "device_class": SensorDeviceClass.HUMIDITY,
                 "unit": PERCENTAGE,
                 "state_class": SensorStateClass.MEASUREMENT
             },
-            X26Attributes.current_radar: {
+            X06Attributes.current_radar: {
                 "type": Platform.BINARY_SENSOR,
                 "name": "Occupancy Status",
                 "device_class": BinarySensorDeviceClass.MOVING
             },
-            X26Attributes.main_light: {
+            X06Attributes.main_light: {
                 "type": Platform.SWITCH,
                 "name": "Main Light",
                 "icon": "mdi:lightbulb"
             },
-            X26Attributes.night_light: {
+            X06Attributes.night_light: {
                 "type": Platform.SWITCH,
                 "name": "Night Light",
                 "icon": "mdi:lightbulb"
             },
-            X26Attributes.mode: {
+            X06Attributes.mode: {
                 "type": Platform.SELECT,
                 "name": "Mode",
                 "options": "preset_modes",
                 "icon": "mdi:fan"
             },
-            X26Attributes.direction: {
+            X06Attributes.direction: {
                 "type": Platform.SELECT,
                 "name": "Direction",
                 "options": "directions",
