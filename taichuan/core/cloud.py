@@ -125,6 +125,7 @@ class TaichuanCloud:
         data.update({
             "loginAccount": f"{self._account}"
         })
+
         if response := await self._api_request(
             endpoint="/v1/user/login/id/get",
             data=data
