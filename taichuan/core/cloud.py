@@ -237,6 +237,8 @@ class UCloud(TaichuanCloud):
                 for data in response["data"]:
                     datas.update({
                         "data": data["data"]
+                    }) 
+                    datas.update({
                         "type": data["type"]
                     }) 
                 for data in datas:
