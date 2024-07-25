@@ -146,7 +146,6 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     cloud_name=SERVERS[user_input[CONF_SERVER]],
                     account=user_input[CONF_ACCOUNT],
                     password=user_input[CONF_PASSWORD]
-                    _LOGGER.debug("get_taichuan_cloud,cloud_name[{cloud_name}],account[{account}],password[{password}]")
                 )
             if await self.cloud.login():
                 self.account = {

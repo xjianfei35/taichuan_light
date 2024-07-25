@@ -27,7 +27,7 @@ from homeassistant.const import (
     CONF_TYPE,
     CONF_CUSTOMIZE,
 )
-from .taichuan.devices import device_selector
+from .taichuan.devices.__init__ import device_selector
 
 _LOGGER = logging.getLogger(__name__)
 
