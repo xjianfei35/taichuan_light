@@ -1,5 +1,5 @@
 {
-  "domain": "taichuain_light",
+  "domain": "taichuan_light",
   "name": "TaiChuan_Light",
   "codeowners": ["@xjianfei35"],
   "config_flow": true,
