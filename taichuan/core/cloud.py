@@ -211,6 +211,7 @@ class UCloud(TaichuanCloud):
         ):
         #self._access_token = response["mdata"]["accessToken"]
         #获取bearer token
+            _LOGGER.info(f"response[{response}]")
             if(response["access_token"]!=""):
                 self._access_token = response["access_token"]
                 self._access_token_type = response["token_type"]
