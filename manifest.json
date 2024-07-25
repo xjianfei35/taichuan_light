@@ -5,9 +5,9 @@
   "config_flow": true,
   "dependencies": [],
   "documentation": "https://git.naszx.xyz:25443/personal/taichuan_light",
-  "integration_type": "device",
-  "iot_class": "local_push",
+  "integration_type": "hub",
+  "iot_class": "cloud_polling",
   "issue_tracker": "https://git.naszx.xyz:25443/personal/taichuan_light/issues",
   "requirements": [],
-  "version": "v0.3.22"
+  "version": "v1.0.0"
 }

@@ -135,7 +135,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             }),
             errors={"base": error} if error else None
         )
-
+""" 
     async def async_step_login(self, user_input=None, error=None):
         if user_input is not None:
             if self.session is None:
@@ -401,7 +401,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     @callback
     def async_get_options_flow(config_entry):
         return OptionsFlowHandler(config_entry)
-
+ """
 
 class OptionsFlowHandler(config_entries.OptionsFlow):
     def __init__(self, config_entry: config_entries.ConfigEntry):
