@@ -54,7 +54,7 @@ TAICHUAN_DEVICES = {
         "name": "Main Light",
         "entities": {
             "light": {
-                "type": Platform.Switch,
+                "type": Platform.SWITCH,
                 "classify": 1,
                 "icon": "mdi:lightbulb",
                 "default": True,
