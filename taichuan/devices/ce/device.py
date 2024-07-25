@@ -9,7 +9,7 @@ try:
     from enum import StrEnum
 except ImportError:
     from ...backports.enum import StrEnum
-from ...core.device import MiedaDevice
+from ...core.device import TaichuanDevice
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -35,7 +35,7 @@ class DeviceAttributes(StrEnum):
     error_code = "error_code"
 
 
-class TaichuanCEDevice(MiedaDevice):
+class TaichuanCEDevice(TaichuanDevice):
     _modes = [
         "Normal", "Sleep mode", "ECO mode"
     ]

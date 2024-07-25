@@ -8,7 +8,7 @@ try:
     from enum import StrEnum
 except ImportError:
     from ...backports.enum import StrEnum
-from ...core.device import MiedaDevice
+from ...core.device import TaichuanDevice
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -26,7 +26,7 @@ class DeviceAttributes(StrEnum):
     bathing_leaving_temperature = "bathing_leaving_temperature"
 
 
-class TaichuanE6Device(MiedaDevice):
+class TaichuanE6Device(TaichuanDevice):
     def __init__(
             self,
             name: str,

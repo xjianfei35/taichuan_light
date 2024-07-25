@@ -15,7 +15,7 @@ try:
     from enum import StrEnum
 except ImportError:
     from ...backports.enum import StrEnum
-from ...core.device import MiedaDevice
+from ...core.device import TaichuanDevice
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -56,7 +56,7 @@ class DeviceAttributes(StrEnum):
     realtime_power = "realtime_power"
 
 
-class TaichuanACDevice(MiedaDevice):
+class TaichuanACDevice(TaichuanDevice):
     _fresh_air_fan_speeds = {
         0: "Off", 20: "Silent", 40: "Low", 60: "Medium", 80: "High", 100: "Full"
     }
