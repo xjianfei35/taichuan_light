@@ -1,4 +1,4 @@
-itmpmport threading
+import threading
 try:
     from enum import StrEnum
 except ImportError:
@@ -41,7 +41,7 @@ class ParseMessageResult(IntEnum):
     ERROR = 99
 
 
-class MiedaDevice(threading.Thread):
+class TaichuanDevice(threading.Thread):
     def __init__(self,
                  name: str,
                  device_id: int,
