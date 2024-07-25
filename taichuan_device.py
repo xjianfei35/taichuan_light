@@ -67,7 +67,7 @@ TAICHUAN_DEVICES = {
     0x26: {
         "name": "Bathroom Master",
         "entities": {
-            X26Attributes.current_temperature: {
+            X06Attributes.current_temperature: {
                 "type": Platform.SENSOR,
                 "name": "Current Temperature",
                 "device_class": SensorDeviceClass.TEMPERATURE,
