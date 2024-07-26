@@ -30,7 +30,7 @@ default_keys = {
 class TaichuanCloud:
     def __init__(
             self,
-            #session: ClientSession,
+            session: ClientSession,
             #security: CloudSecurity,
             #app_id: str,
             client_id: str,
