@@ -12,10 +12,11 @@
         "step": {
             "user": {
                 "data": {
-                    "way": "添加方式"
+                    "account": "账号",
+                    "password": "密码"
                 },
-                "description": "选择添加设备的方式",
-                "title": "添加新设备"
+                "description": "登录太川UCloud",
+                "title": "登录"
             },
             "login": {
                 "data": {

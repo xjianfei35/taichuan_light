@@ -228,6 +228,7 @@ class UCloud(TaichuanCloud):
                 return False
 
     async def list_dev(self):
+        devices = {}
         if response := await self._api_request(
             endpoint="/smarthome/api/device",
             data={}
@@ -245,7 +246,7 @@ class UCloud(TaichuanCloud):
                     if(data["type"]==1):
                         deviceNum = data["data"]["deviceNum"]
 
-
+        return devices;
     async def list_home(self):
         if response := await self._api_request(
             endpoint="https://ucloud.taichuan.net/smarthome/api/v2/ctl/getDeviceSchemaList",

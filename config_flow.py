@@ -119,7 +119,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 return True
         return False
 
-    async def async_step_user(self, user_input=None, error=None):
+    """ async def async_step_user(self, user_input=None, error=None):
         if user_input is not None:
             if user_input["action"] == "discovery":
                 return await self.async_step_discovery()
@@ -134,9 +134,9 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 vol.Required("action", default="discovery"): vol.In(ADD_WAY)
             }),
             errors={"base": error} if error else None
-        )
+        ) """
 
-    async def async_step_login(self, user_input=None, error=None):
+    async def async_step_user(self, user_input=None, error=None):
         if user_input is not None:
             if self.session is None:
                 self.session = async_create_clientsession(self.hass)
@@ -154,7 +154,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     CONF_SERVER:  SERVERS[user_input[CONF_SERVER]]
                 }
                 self._save_account(self.account)
-                return await self.async_step_auto()
+                return await self.async_step_list()
             else:
                 return await self.async_step_login(error="login_failed")
         return self.async_show_form(
@@ -168,7 +168,9 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         )
 
     async def async_step_list(self, user_input=None, error=None):
-        all_devices = discover()
+        #添加自己的设备发现方式
+        #all_devices = discover()
+        all_devices = self.cloud.list_dev()
         if len(all_devices) > 0:
             table = "Appliance code|Type|IP address|SN|Supported\n:--:|:--:|:--:|:--:|:--:"
             for device_id, device in all_devices.items():

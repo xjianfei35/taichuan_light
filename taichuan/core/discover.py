@@ -36,6 +36,7 @@ DEVICE_INFO_MSG = bytearray([
 def discover(discover_type=None, ip_address=None):
     if discover_type is None:
         discover_type = []
+    """ 
     security = LocalSecurity()
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
@@ -112,7 +113,7 @@ def discover(discover_type=None, ip_address=None):
         except socket.timeout:
             break
         except socket.error as e:
-            _LOGGER.error(f"Socket error: {repr(e)}")
+            _LOGGER.error(f"Socket error: {repr(e)}") """
     return found_devices
 
 
