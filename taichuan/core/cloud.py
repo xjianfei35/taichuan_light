@@ -66,7 +66,7 @@ class TaichuanCloud:
     def _make_general_data(self):
         return {}
 
-    async def _api_request(self, endpoint: str, data: dict, header=None) -> dict | None:
+    async def _api_request(self, Interface,endpoint: str, data: dict, header=None) -> dict | None:
         header = header or {}
         if not data.get("client_id"):
             data.update({
@@ -110,7 +110,7 @@ class TaichuanCloud:
             })
         response: dict = {"error": "invalid client"}
         try:
-            r = await self._session.request("POST", url, headers=header, data=dump_data, timeout=10)
+            r = await self._session.request(Interface, url, headers=header, data=dump_data, timeout=10)
             raw = await r.read()
             _LOGGER.info(f"Taichuan cloud API url: {url}, data: {data}, response: {raw}")
         except Exception as e:
@@ -210,6 +210,7 @@ class UCloud(TaichuanCloud):
         }
         
         if response := await self._api_request(
+            "POST",
             endpoint="/system/token",
             data=data
         ):
@@ -230,23 +231,24 @@ class UCloud(TaichuanCloud):
     async def list_dev(self):
         devices = {}
         if response := await self._api_request(
-            endpoint="/smarthome/api/device",
+            "GET",
+            endpoint="/smarthome/api/v2/ctl/getDeviceSchemaList?num=C3201224000275&machineType=2003&timeout=6",
             data={}
         ):
             if(response["code"]==0):
-                datas={}
-                for data in response["data"]:
-                    datas.update({
-                        "data": data["data"]
-                    }) 
-                    datas.update({
-                        "type": data["type"]
-                    }) 
-                for data in datas:
-                    if(data["type"]==1):
-                        deviceNum = data["data"]["deviceNum"]
+                devices = response["data"]["devices"]
+        return devices
+    async def list_scene(self):
+        scenes = {}
+        if response := await self._api_request(
+            "GET",
+            endpoint="/smarthome/api/v2/ctl/getSceneInfoList?machineType=2003&num=C3201224000275&timeout=10",
+            data={}
+        ):
+            if(response["code"]==0):
+                scenes = response["data"]
+        return scenes
 
-        return devices;
     async def list_home(self):
         if response := await self._api_request(
             endpoint="https://ucloud.taichuan.net/smarthome/api/v2/ctl/getDeviceSchemaList",

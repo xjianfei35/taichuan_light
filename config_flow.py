@@ -42,7 +42,8 @@ from .taichuan_device import TAICHUAN_DEVICES
 
 _LOGGER = logging.getLogger(__name__)
 
-ADD_WAY = {"discovery": "Discover automatically", "manually": "Configure manually", "list": "List all appliances only"}
+#ADD_WAY = {"discovery": "Discover automatically", "manually": "Configure manually", "list": "List all appliances only"}
+ADD_WAY = {"device": "scan devices", "scene": "scan scenes"}
 PROTOCOLS = {1: "V1", 2: "V2", 3: "V3"}
 STORAGE_PATH = f".storage/{DOMAIN}"
 
@@ -65,6 +66,8 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     available_device = []
     devices = {}
     found_device = {}
+    scenes = {}
+    found_scenes{}
     supports = {}
     unsorted = {}
     account = {}
@@ -154,7 +157,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     CONF_SERVER:  SERVERS[user_input[CONF_SERVER]]
                 }
                 self._save_account(self.account)
-                return await self.async_step_list()
+                return await self.async_step_discovery()
             else:
                 return await self.async_step_login(error="login_failed")
         return self.async_show_form(
@@ -188,7 +191,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     async def async_step_discovery(self, user_input=None, error=None):
         if user_input is not None:
-            if user_input[CONF_IP_ADDRESS].lower() == "auto":
+            """ if user_input[CONF_IP_ADDRESS].lower() == "auto":
                 ip_address = None
             else:
                 ip_address = user_input[CONF_IP_ADDRESS]
@@ -200,12 +203,23 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                         f"{device_id} ({self.supports.get(device.get(CONF_TYPE))})"
             if len(self.available_device) > 0:
                 return await self.async_step_auto()
-            else:
-                return await self.async_step_discovery(error="no_devices")
+            else: """
+            if user_input["action"] == "device":
+                self.devices = self.cloud.list_dev()
+                self.available_device = {}
+                for device_id, device in self.devices.items():
+                    if not self._already_configured(device_id, device.get(CONF_IP_ADDRESS)):
+                        self.available_device[device_id] = f"{device_id} ({self.supports.get(device.get(CONF_TYPE))})"
+                if(len())
+            else if user_input["actioin"] == "scene":
+                scenes = self.cloud.list_scene();
+            
+                return await self.async_step_discovery(error="no_devices&scenes")
         return self.async_show_form(
             step_id="discovery",
             data_schema=vol.Schema({
-                vol.Required(CONF_IP_ADDRESS, default="auto"): str
+                #vol.Required(CONF_IP_ADDRESS, default="auto"): str
+                vol.Required("action", default="discovery"): vol.In(ADD_WAY)
             }),
             errors={"base": error} if error else None
         )

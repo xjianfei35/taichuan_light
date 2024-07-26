@@ -1,9 +1,9 @@
 import logging
-import math
+import json
 from .message import (
     MessageQuery,
     MessageSet,
-    Message06Response
+    Message13Response
 )
 try:
     from enum import StrEnum
@@ -15,18 +15,15 @@ _LOGGER = logging.getLogger(__name__)
 
 
 class DeviceAttributes(StrEnum):
-    main_light = "main_light"
-    night_light = "night_light"
-    mode = "mode"
-    direction = "direction"
-    current_humidity = "current_humidity"
-    current_radar = "current_radar"
-    current_temperature = "current_temperature"
+    brightness = "brightness"
+    color_temperature = "color_temperature"
+    rgb_color = "rgb_color"
+    effect = "effect"
+    power = "power"
 
 
-class Taichuan06Device(TaichuanDevice):
-    _modes = ["Off", "Heat(high)", "Heat(low)", "Bath", "Blow", "Ventilation", "Dry"]
-    _directions = ["60", "70", "80", "90", "100", "110", "120", "Oscillate"]
+class Taichuan13Device(TaichuanDevice):
+    _effects = ["Manual", "Living", "Reading", "Mildly", "Cinema", "Night"]
 
     def __init__(
             self,
@@ -39,13 +36,12 @@ class Taichuan06Device(TaichuanDevice):
             protocol: int,
             model: str,
             subtype: int,
-            ctrlId: int,
             customize: str
     ):
         super().__init__(
             name=name,
             device_id=device_id,
-            device_type=0x06,
+            device_type=0x13,
             ip_address=ip_address,
             port=port,
             token=token,
@@ -53,90 +49,82 @@ class Taichuan06Device(TaichuanDevice):
             protocol=protocol,
             model=model,
             subtype=subtype,
-            ctrlId=ctrlId,
             attributes={
-                DeviceAttributes.main_light: False,
-                DeviceAttributes.night_light: False,
-                DeviceAttributes.mode: None,
-                DeviceAttributes.direction: None,
-                DeviceAttributes.current_humidity: None,
-                DeviceAttributes.current_radar: None,
-                DeviceAttributes.current_temperature: None
+                DeviceAttributes.brightness: None,
+                DeviceAttributes.color_temperature: None,
+                DeviceAttributes.rgb_color: None,
+                DeviceAttributes.effect: None,
+                DeviceAttributes.power: False
             })
-        self._fields = {}
-
-    @staticmethod
-    def _convert_to_taichuan_direction(direction):
-        if direction == "Oscillate":
-            result = 0xFD
-        else:
-            result = Taichuan06Device._directions.index(direction) * 10 + 60 \
-                if direction in Taichuan06Device._directions else 0xFD
-        return result
-
-    @staticmethod
-    def _convert_from_taichuan_direction(direction):
-        if direction > 120 or direction < 60:
-            result = 7
-        else:
-            result = math.floor((direction - 60 + 5) / 10)
-        return result
+        self._color_temp_range = None
+        self._default_color_temp_range = [2700, 6500]
+        self.set_customize(customize)
 
     @property
-    def preset_modes(self):
-        return Taichuan06Device._modes
+    def effects(self):
+        return Taichuan13Device._effects
 
     @property
-    def directions(self):
-        return Taichuan06Device._directions
+    def color_temp_range(self):
+        return self._color_temp_range
+
+    def kelvin_to_taichuan(self, kelvin):
+        return round((kelvin - self._color_temp_range[0]) /
+        (self._color_temp_range[1] - self._color_temp_range[0]) * 255)
+
+    def taichuan_to_kelvin(self, taichuan):
+        return round((self._color_temp_range[1] - self._color_temp_range[0]) / 255 * taichuan) + \
+            self._color_temp_range[0]
 
     def build_query(self):
         return [MessageQuery(self._protocol_version)]
 
     def process_message(self, msg):
-        message = Message06Response(msg)
+        message = Message13Response(msg)
         _LOGGER.info(f"[{self.device_id}] Received: {message}")
         new_status = {}
-        self._fields = getattr(message, "fields")
-        for status in self._attributes.keys():
-            if hasattr(message, str(status)):
-                value = getattr(message, str(status))
-                if status == DeviceAttributes.mode:
-                    self._attributes[status] = Taichuan06Device._modes[value]
-                elif status == DeviceAttributes.direction:
-                    self._attributes[status] = Taichuan06Device._directions[
-                        self._convert_from_taichuan_direction(value)
-                    ]
-                else:
-                    self._attributes[status] = value
-                new_status[str(status)] = self._attributes[status]
+        if hasattr(message, "control_success"):
+            new_status = {"control_success", message.control_success}
+            if message.control_success:
+                self.refresh_status()
+        else:
+            for status in self._attributes.keys():
+                if hasattr(message, str(status)):
+                    value = getattr(message, str(status))
+                    if status == DeviceAttributes.effect:
+                        self._attributes[status] = Taichuan13Device._effects[value]
+                    elif status == DeviceAttributes.color_temperature:
+                        self._attributes[status] = self.taichuan_to_kelvin(value)
+                    else:
+                        self._attributes[status] = value
+                    new_status[str(status)] = self._attributes[status]
         return new_status
 
     def set_attribute(self, attr, value):
-        if attr in [DeviceAttributes.main_light,
-                    DeviceAttributes.night_light,
-                    DeviceAttributes.mode,
-                    DeviceAttributes.direction
-                    ]:
+        if attr in [DeviceAttributes.brightness,
+                    DeviceAttributes.color_temperature,
+                    DeviceAttributes.effect,
+                    DeviceAttributes.power]:
             message = MessageSet(self._protocol_version)
-            message.fields = self._fields
-            message.main_light = self._attributes[DeviceAttributes.main_light]
-            message.night_light = self._attributes[DeviceAttributes.night_light]
-            message.mode = Taichuan06Device._modes.index(self._attributes[DeviceAttributes.mode])
-            message.direction = self._convert_to_taichuan_direction(self._attributes[DeviceAttributes.direction])
-            if attr in [
-                DeviceAttributes.main_light,
-                DeviceAttributes.night_light
-            ]:
-                message.main_light = False
-                message.night_light = False
+            if attr == DeviceAttributes.effect and value in self._effects:
+                setattr(message, str(attr), Taichuan13Device._effects.index(value))
+            elif attr == DeviceAttributes.color_temperature:
+                setattr(message, str(attr), self.kelvin_to_taichuan(value))
+            else:
                 setattr(message, str(attr), value)
-            elif attr == DeviceAttributes.mode:
-                message.mode = Taichuan06Device._modes.index(value)
-            elif attr == DeviceAttributes.direction:
-                message.direction = self._convert_to_taichuan_direction(value)
             self.build_send(message)
 
+    def set_customize(self, customize):
+        self._color_temp_range = self._default_color_temp_range
+        if customize and len(customize) > 0:
+            try:
+                params = json.loads(customize)
+                if params and "color_temp_range_kelvin" in params:
+                    self._color_temp_range = params.get("color_temp_range_kelvin")
+            except Exception as e:
+                _LOGGER.error(f"[{self.device_id}] Set customize error: {repr(e)}")
+            self.update_all({"color_temp_range": self._color_temp_range})
 
-class TaichuanAppliance(Taichuan06Device):
+
+class TaichuanAppliance(Taichuan13Device):
     pass
