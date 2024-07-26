@@ -47,7 +47,7 @@ from .taichuan.devices.fa.device import DeviceAttributes as FAAttributes
 from .taichuan.devices.fb.device import DeviceAttributes as FBAttributes
 from .taichuan.devices.fc.device import DeviceAttributes as FCAttributes
 from .taichuan.devices.fd.device import DeviceAttributes as FDAttributes """
-from .taichuan.device.x06.device import DeviceAttributes as X06Attributes
+from .taichuan.devices.x06.device import DeviceAttributes as X06Attributes
 
 
 TAICHUAN_DEVICES = {
