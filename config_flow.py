@@ -119,7 +119,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 return True
         return False
 
-   """  async def async_step_user(self, user_input=None, error=None):
+    async def async_step_user(self, user_input=None, error=None):
         if user_input is not None:
             if user_input["action"] == "discovery":
                 return await self.async_step_discovery()
@@ -134,7 +134,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 vol.Required("action", default="discovery"): vol.In(ADD_WAY)
             }),
             errors={"base": error} if error else None
-        ) """
+        )
 
     async def async_step_login(self, user_input=None, error=None):
         if user_input is not None:
