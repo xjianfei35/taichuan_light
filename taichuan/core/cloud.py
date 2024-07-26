@@ -7,6 +7,8 @@ from threading import Lock
 from aiohttp import ClientSession
 from secrets import token_hex
 from urllib.request import quote
+import json
+from urllib.parse import urlencode
 from .security import CloudSecurity, MeijuCloudSecurity, MSmartCloudSecurity, TaichuanAirSecurity
 
 _LOGGER = logging.getLogger(__name__)
@@ -59,7 +61,8 @@ class TaichuanCloud:
     async def _api_request(self, Interface,endpoint: str, data: dict, header=None) -> dict | None:
         header = header or {}      
         url = self._api_url + endpoint
-        dump_data = json.dumps(data)
+        #dump_data = json.load(json.dump(data))
+        dump_data = urlencode(data,doseq=True)
         #sign = self._security.sign("", dump_data, random)
         header.update({
             "content-type": "application/x-www-form-urlencoded",
@@ -72,7 +75,7 @@ class TaichuanCloud:
             })
         response: dict = {"error": "invalid client"}
         try:
-            r = await self._session.request(Interface, url, headers=header, data=dump_data, timeout=10)
+            r =  self._session.request(Interface, url, headers=header, data=dump_data, timeout=10)
             raw = await r.read()
             _LOGGER.info(f"Taichuan cloud API url: {url}, data: {data}, response: {raw}")
         except Exception as e:
