@@ -62,7 +62,8 @@ class TaichuanCloud:
         header = header or {}      
         url = self._api_url + endpoint
         #dump_data = json.load(json.dump(data))
-        dump_data = urlencode(data,doseq=True)
+        data_dict = json.loads(json.dumps(data))
+        dump_data = urlencode(data_dict,doseq=True)
         #sign = self._security.sign("", dump_data, random)
         header.update({
             "content-type": "application/x-www-form-urlencoded",
