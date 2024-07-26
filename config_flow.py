@@ -109,9 +109,9 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     def _check_storage_device(device: dict, storage_device: dict):
         if storage_device.get(CONF_SUBTYPE) is None:
             return False
-        if (device.get(CONF_PROTOCOL) == 3 and
-                (storage_device.get(CONF_TOKEN) is None or storage_device.get(CONF_KEY) is None)):
-            return False
+        #if (device.get(CONF_PROTOCOL) == 3 and
+        #        (storage_device.get(CONF_TOKEN) is None or storage_device.get(CONF_KEY) is None)):
+        #    return False
         return True
 
     #def _already_configured(self, device_id, ip_address):
@@ -161,7 +161,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             else:
                 return await self.async_step_login(error="login_failed")
         return self.async_show_form(
-            step_id="login",
+            step_id="user",
             data_schema=vol.Schema({
                 vol.Required(CONF_ACCOUNT): str,
                 vol.Required(CONF_PASSWORD): str,
