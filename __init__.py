@@ -66,7 +66,7 @@ async def async_setup(hass: HomeAssistant, hass_config: dict):
                 attributes.append(attribute_name.value)
     _LOGGER.debug(f"in async_setup,attributes[{attributes}]")
     def service_set_attribute(service):
-       """  device_id = service.data.get("device_id")
+        device_id = service.data.get("device_id")
         attr = service.data.get("attribute")
         value = service.data.get("value")
         dev = hass.data[DOMAIN][DEVICES].get(device_id)
@@ -78,11 +78,11 @@ async def async_setup(hass: HomeAssistant, hass_config: dict):
                          (dev.device_type == 0xAC and attr == "fan_speed" and value in range(0, 103))):
                 dev.set_attribute(attr=attr, value=value)
             else:
-                _LOGGER.error(f"Appliance [{device_id}] has no attribute {attr} or value is invalid") """
+                _LOGGER.error(f"Appliance [{device_id}] has no attribute {attr} or value is invalid")
        _LOGGER.debug("service_set_attribute")
 
     def service_send_command(service):
-       """  device_id = service.data.get("device_id")
+        device_id = service.data.get("device_id")
         cmd_type = service.data.get("cmd_type")
         cmd_body = service.data.get("cmd_body")
         try:
@@ -92,7 +92,7 @@ async def async_setup(hass: HomeAssistant, hass_config: dict):
             return
         dev = hass.data[DOMAIN][DEVICES].get(device_id)
         if dev:
-            dev.send_command(cmd_type, cmd_body) """
+            dev.send_command(cmd_type, cmd_body)
        _LOGGER.debug("service_send_command")
 
     hass.services.async_register(
