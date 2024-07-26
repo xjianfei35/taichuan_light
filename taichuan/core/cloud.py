@@ -263,6 +263,21 @@ class UCloud(TaichuanCloud):
             return appliances
         return None
 
+
+    async def get_device_info(self, device_id: int):
+        devices = {}
+        devices = self.list_dev()
+        for device in devices:
+            if(device_id == device.get("id")):
+                device_info = {
+                    "name": device.get("name"),
+                    "type": device.get("type"),
+                    "device_id": device.get("id"),
+                    "events": device.get("events"),
+                    "properties": device.get("properties")
+                }
+                return device_info
+            
     """ 
     async def get_device_info(self, device_id: int):
         data = {
