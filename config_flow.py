@@ -119,7 +119,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 return True
         return False
 
-    """ async def async_step_user(self, user_input=None, error=None):
+    async def async_step_user(self, user_input=None, error=None):
         if user_input is not None:
             if user_input["action"] == "discovery":
                 return await self.async_step_discovery()
@@ -134,14 +134,14 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 vol.Required("action", default="discovery"): vol.In(ADD_WAY)
             }),
             errors={"base": error} if error else None
-        ) """
+        )
 
-    async def async_step_user(self, user_input=None, error=None):
+     async def async_step_login(self, user_input=None, error=None):
         if user_input is not None:
             if self.session is None:
                 self.session = async_create_clientsession(self.hass)
             if self.cloud is None:
-                self.cloud = get_taichuan_cloud(
+                self.cloud = get_midea_cloud(
                     session=self.session,
                     cloud_name=SERVERS[user_input[CONF_SERVER]],
                     account=user_input[CONF_ACCOUNT],
@@ -154,7 +154,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     CONF_SERVER:  SERVERS[user_input[CONF_SERVER]]
                 }
                 self._save_account(self.account)
-                return await self.async_step_list()
+                return await self.async_step_auto()
             else:
                 return await self.async_step_login(error="login_failed")
         return self.async_show_form(
@@ -237,7 +237,9 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     self.session = async_create_clientsession(self.hass)
                 if self.cloud is None:
                     self.cloud = get_taichuan_cloud(
-                        self.account[CONF_SERVER], self.session, self.account[CONF_ACCOUNT],
+                        self.account[CONF_SERVER], 
+                        self.session, 
+                        self.account[CONF_ACCOUNT],
                         self.account[CONF_PASSWORD])
                 if not await self.cloud.login():
                     return await self.async_step_login()

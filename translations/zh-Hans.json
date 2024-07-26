@@ -12,18 +12,17 @@
         "step": {
             "user": {
                 "data": {
-                    "account": "账号",
-                    "password": "密码"
+                    "way": "添加方式"
                 },
-                "description": "请输入太川智家的账户和密码",
-                "title": "登录"
+                "description": "选择添加设备的方式",
+                "title": "添加新设备"
             },
             "login": {
                 "data": {
                     "account": "账号",
                     "password": "密码"
                 },
-                "description": "登录并保存你的美的账户，仅用于获取添加设备时设备信息\n添加设备完成后，你可以删除该配置",
+                "description": "登录并保存你的太川账户，仅用于获取添加设备时设备信息\n你可以删除该配置",
                 "title": "登录"
             },
             "discovery": {
