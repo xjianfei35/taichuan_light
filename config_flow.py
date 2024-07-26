@@ -147,7 +147,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 self.cloud = get_taichuan_cloud(
                     session=self.session,
                     cloud_name=SERVERS[user_input[CONF_SERVER]],
-                    account=user_input[CONF_ACCOUNT],
+                    username=user_input[CONF_ACCOUNT],
                     password=user_input[CONF_PASSWORD]
                 )
             if await self.cloud.login():
