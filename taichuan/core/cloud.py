@@ -35,7 +35,6 @@ class TaichuanCloud:
             #app_id: str,
             #app_key: str,
             username: str,
-            scope: str,
             password: str,
             api_url: str,
     ):
