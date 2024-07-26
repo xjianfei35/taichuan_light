@@ -33,14 +33,11 @@ class TaichuanCloud:
             session: ClientSession,
             #security: CloudSecurity,
             #app_id: str,
-            client_id: str,
-            grand_type: str,
             #app_key: str,
             username: str,
             scope: str,
             password: str,
             api_url: str,
-            bearer_token: str
     ):
         '''
         self._device_id = CloudSecurity.get_deviceid(account)
