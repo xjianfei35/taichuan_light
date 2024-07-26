@@ -79,7 +79,6 @@ async def async_setup(hass: HomeAssistant, hass_config: dict):
                 dev.set_attribute(attr=attr, value=value)
             else:
                 _LOGGER.error(f"Appliance [{device_id}] has no attribute {attr} or value is invalid")
-       _LOGGER.debug(f"service_set_attribute")
 
     def service_send_command(service):
         device_id = service.data.get("device_id")
@@ -93,7 +92,6 @@ async def async_setup(hass: HomeAssistant, hass_config: dict):
         dev = hass.data[DOMAIN][DEVICES].get(device_id)
         if dev:
             dev.send_command(cmd_type, cmd_body)
-       _LOGGER.debug(f"service_send_command")
 
     hass.services.async_register(
         DOMAIN,
