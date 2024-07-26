@@ -576,13 +576,13 @@ class TaichuanAirCloud(TaichuanCloud):
         return None
 '''
 
-def get_taichuan_cloud(cloud_name: str, session: ClientSession, account: str, password: str) -> TaichuanCloud | None:
+def get_taichuan_cloud(cloud_name: str, session: ClientSession, username: str, password: str) -> TaichuanCloud | None:
     cloud = None
     if cloud_name in clouds.keys():
         cloud = globals()[clouds[cloud_name]["class_name"]](
             cloud_name=cloud_name,
             session=session,
-            account=account,
+            username=username,
             password=password
         )
     return cloud

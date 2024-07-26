@@ -46,10 +46,10 @@ STORAGE_PATH = f".storage/{DOMAIN}"
 
 SERVERS = {
     1: "珠海U家",
-    2: "美的美居",
-    3: "Taichuan Air",
-    4: "NetHome Plus",
-    5: "Ariston Clima",
+    2: "珠海U家[测试]",
+    3: "东莞智慧社区云平台",
+    4: "兰州U家",
+    5: "天翼平台",
 }
 
 PRESET_ACCOUNT = [
