@@ -157,7 +157,6 @@ class UCloud(TaichuanCloud):
             session: ClientSession,
             username: str,
             password: str,
-            deviceNum: str,
     ):
         super().__init__(
             session=session,
