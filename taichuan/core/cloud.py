@@ -78,7 +78,7 @@ class TaichuanCloud:
             })
         response: dict = {"error": "invalid client"}
         try:
-            r =  self._session.request(Interface, url, headers=header, data=dump_data, timeout=10)
+            r =  self._session.request(url, headers=header, data=dump_data, timeout=10)
             raw = await r.read()
             _LOGGER.info(f"Taichuan cloud API url: {url}, data: {data}, response: {raw}")
         except Exception as e:
