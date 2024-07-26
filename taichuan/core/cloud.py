@@ -80,7 +80,7 @@ class TaichuanCloud:
             raw = await r.read()
             _LOGGER.info(f"Taichuan cloud API url: {url}, data: {data}, response: {raw}")
         except Exception as e:
-            _LOGGER.warning(f"Taichuan cloud API error, url: {url}, data:{data},error: {repr(e)}")
+            _LOGGER.warning(f"Taichuan cloud API error, url: {url}, data:{dump_data},error: {repr(e)}")
         
         if int(response["code"]) == 0:
             return response["data"]
