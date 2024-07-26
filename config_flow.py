@@ -25,9 +25,6 @@ from homeassistant.const import (
     CONF_TOKEN,
     CONF_DEVICE_ID,
     CONF_TYPE,
-    CONF_IP_ADDRESS,
-    CONF_PROTOCOL,
-    CONF_PORT,
     CONF_SWITCHES,
     CONF_SENSORS,
     CONF_CUSTOMIZE,
@@ -64,10 +61,11 @@ PRESET_ACCOUNT = [
 
 class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     available_device = []
+    available_scene = []
     devices = {}
     found_device = {}
     scenes = {}
-    found_scenes{}
+    found_scenes={}
     supports = {}
     unsorted = {}
     account = {}
@@ -116,9 +114,11 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             return False
         return True
 
-    def _already_configured(self, device_id, ip_address):
+    #def _already_configured(self, device_id, ip_address):
+    def _already_configured(self, device_id):
         for entry in self._async_current_entries():
-            if device_id == entry.data.get(CONF_DEVICE_ID) or ip_address == entry.data.get(CONF_IP_ADDRESS):
+            #if device_id == entry.data.get(CONF_DEVICE_ID) or ip_address == entry.data.get(CONF_IP_ADDRESS):
+            if device_id == entry.data.get(CONF_DEVICE_ID):
                 return True
         return False
 
@@ -144,7 +144,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             if self.session is None:
                 self.session = async_create_clientsession(self.hass)
             if self.cloud is None:
-                self.cloud = get_midea_cloud(
+                self.cloud = get_taichuan_cloud(
                     session=self.session,
                     cloud_name=SERVERS[user_input[CONF_SERVER]],
                     account=user_input[CONF_ACCOUNT],
@@ -173,16 +173,26 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     async def async_step_list(self, user_input=None, error=None):
         #添加自己的设备发现方式
         #all_devices = discover()
-        all_devices = self.cloud.list_dev()
-        if len(all_devices) > 0:
-            table = "Appliance code|Type|IP address|SN|Supported\n:--:|:--:|:--:|:--:|:--:"
-            for device_id, device in all_devices.items():
-                supported = device.get(CONF_TYPE) in self.supports.keys()
-                table += f"\n{device_id}|{'%02X' % device.get(CONF_TYPE)}|{device.get(CONF_IP_ADDRESS)}|" \
-                         f"{device.get('sn')}|" \
+        if (user_input["action"] == "device"):
+            all_devices = self.cloud.list_dev()
+            if len(all_devices) > 0:
+                table = "Appliance code|Type|IP address|SN|Supported\n:--:|:--:|:--:|:--:|:--:"
+                for device in all_devices.items():
+                    supported = device.get(CONF_TYPE) in self.supports.keys()
+                    table += f"\n{'%02X' % device.get(CONF_TYPE)}" f"{device.get('id')}|" \
                          f"{'<font color=gree>YES</font>' if supported else '<font color=red>NO</font>'}"
-        else:
+            else:
+                table = "Not found"
+        elif(user_input["action"]=="scene"):
             table = "Not found"
+            """ all_scenes = self.cloud.list_scene()
+            if len(all_scenes) > 0:
+                table = "Appliance code|Type|IP address|SN|Supported\n:--:|:--:|:--:|:--:|:--:"
+                for device_id, device in all_scenes.items():
+                    supported = device.get(CONF_TYPE) in self.supports.keys()
+                    table += f"\n{device_id}|{'%02X' % device.get(CONF_TYPE)}|{device.get(CONF_IP_ADDRESS)}|" \
+                         f"{device.get('sn')}|" \
+                         f"{'<font color=gree>YES</font>' if supported else '<font color=red>NO</font>'}" """
         return self.async_show_form(
             step_id="list",
             description_placeholders={"table": table},
@@ -208,13 +218,21 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 self.devices = self.cloud.list_dev()
                 self.available_device = {}
                 for device_id, device in self.devices.items():
-                    if not self._already_configured(device_id, device.get(CONF_IP_ADDRESS)):
+                    if not self._already_configured(device_id):
                         self.available_device[device_id] = f"{device_id} ({self.supports.get(device.get(CONF_TYPE))})"
-                if(len())
-            else if user_input["actioin"] == "scene":
-                scenes = self.cloud.list_scene();
-            
-                return await self.async_step_discovery(error="no_devices&scenes")
+
+                if(len(self.available_device)>0):
+                    return await self.async_step_list()
+                else:
+                    return await self.async_step_discovery(error="no device found")
+            elif user_input["actioin"] == "scene":
+                scenes = self.cloud.list_scene()
+                self.scenes = self.cloud.list_scene()
+                self.available_scene ={}
+                if(len(self.available_scene)>0):
+                    return await self.async_step_list()
+                else:
+                    return await self.async_step_discovery(error="no  scene found")
         return self.async_show_form(
             step_id="discovery",
             data_schema=vol.Schema({
@@ -233,9 +251,6 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 self.found_device = {
                     CONF_DEVICE_ID: device_id,
                     CONF_TYPE: device.get(CONF_TYPE),
-                    CONF_PROTOCOL: device.get(CONF_PROTOCOL),
-                    CONF_IP_ADDRESS: device.get(CONF_IP_ADDRESS),
-                    CONF_PORT: device.get(CONF_PORT),
                     CONF_MODEL: device.get(CONF_MODEL),
                     CONF_NAME: storage_device.get(CONF_NAME),
                     CONF_SUBTYPE: storage_device.get(CONF_SUBTYPE),
@@ -262,15 +277,12 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 self.found_device = {
                     CONF_DEVICE_ID: device_id,
                     CONF_TYPE: device.get(CONF_TYPE),
-                    CONF_PROTOCOL: device.get(CONF_PROTOCOL),
-                    CONF_IP_ADDRESS: device.get(CONF_IP_ADDRESS),
-                    CONF_PORT: device.get(CONF_PORT),
                     CONF_MODEL: device.get(CONF_MODEL),
                 }
                 if device_info := await self.cloud.get_device_info(device_id):
                     self.found_device[CONF_NAME] = device_info.get("name")
                     self.found_device[CONF_SUBTYPE] = device_info.get("model_number")
-                if device.get(CONF_PROTOCOL) == 3:
+                """ if device.get(CONF_PROTOCOL) == 3:
                     if self.account[CONF_SERVER] == "美的美居":
                         _LOGGER.info(f"Try to get the Token and the Key use the preset MSmartHome account")
                         self.cloud = get_taichuan_cloud(
@@ -301,8 +313,8 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                             self.found_device[CONF_KEY] = key["key"]
                             return await self.async_step_manually()
                     return await self.async_step_auto(error="connect_error")
-                else:
-                    return await self.async_step_manually()
+                else: """
+                return await self.async_step_manually()
 
         return self.async_show_form(
             step_id="auto",
@@ -318,9 +330,6 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             self.found_device = {
                 CONF_DEVICE_ID: user_input[CONF_DEVICE_ID],
                 CONF_TYPE: user_input[CONF_TYPE],
-                CONF_PROTOCOL: user_input[CONF_PROTOCOL],
-                CONF_IP_ADDRESS: user_input[CONF_IP_ADDRESS],
-                CONF_PORT: user_input[CONF_PORT],
                 CONF_MODEL: user_input[CONF_MODEL],
                 CONF_TOKEN: user_input[CONF_TOKEN],
                 CONF_KEY: user_input[CONF_KEY]
@@ -330,17 +339,14 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 bytearray.fromhex(user_input[CONF_KEY])
             except ValueError:
                 return await self.async_step_manually(error="invalid_token")
-            if user_input[CONF_PROTOCOL] == 3 and (len(user_input[CONF_TOKEN]) == 0 or len(user_input[CONF_KEY]) == 0):
-                return await self.async_step_manually(error="invalid_token")
+            #if user_input[CONF_PROTOCOL] == 3 and (len(user_input[CONF_TOKEN]) == 0 or len(user_input[CONF_KEY]) == 0):
+            #    return await self.async_step_manually(error="invalid_token")
             dm = TaichuanDevice(
                 name="",
                 device_id=user_input[CONF_DEVICE_ID],
                 device_type=user_input[CONF_TYPE],
-                ip_address=user_input[CONF_IP_ADDRESS],
-                port=user_input[CONF_PORT],
                 token=user_input[CONF_TOKEN],
                 key=user_input[CONF_KEY],
-                protocol=user_input[CONF_PROTOCOL],
                 model=user_input[CONF_MODEL],
                 subtype=0,
                 attributes={}
@@ -351,9 +357,6 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     CONF_NAME: user_input[CONF_NAME],
                     CONF_DEVICE_ID: user_input[CONF_DEVICE_ID],
                     CONF_TYPE: user_input[CONF_TYPE],
-                    CONF_PROTOCOL: user_input[CONF_PROTOCOL],
-                    CONF_IP_ADDRESS: user_input[CONF_IP_ADDRESS],
-                    CONF_PORT: user_input[CONF_PORT],
                     CONF_MODEL: user_input[CONF_MODEL],
                     CONF_SUBTYPE: user_input[CONF_SUBTYPE],
                     CONF_TOKEN: user_input[CONF_TOKEN],
@@ -384,18 +387,6 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     default=self.found_device.get(CONF_TYPE) if self.found_device.get(CONF_TYPE) else 0xac
                 ): vol.In(self.supports),
                 vol.Required(
-                    CONF_IP_ADDRESS,
-                    default=self.found_device.get(CONF_IP_ADDRESS)
-                ): str,
-                vol.Required(
-                    CONF_PORT,
-                    default=self.found_device.get(CONF_PORT) if self.found_device.get(CONF_PORT) else 6444
-                ): int,
-                vol.Required(
-                    CONF_PROTOCOL,
-                    default=self.found_device.get(CONF_PROTOCOL) if self.found_device.get(CONF_PROTOCOL) else 3
-                ): vol.In(PROTOCOLS),
-                vol.Required(
                     CONF_MODEL,
                     default=self.found_device.get(CONF_MODEL) if self.found_device.get(CONF_MODEL) else "Unknown"
                 ): str,
@@ -425,7 +416,6 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
     def __init__(self, config_entry: config_entries.ConfigEntry):
         self._config_entry = config_entry
         self._device_type = config_entry.data.get(CONF_TYPE)
-        _LOGGER.info(f"_device_type[{_self._device_type}]")
         if self._device_type is None:
             self._device_type = 0xac
         if CONF_SENSORS in self._config_entry.options:
@@ -450,13 +440,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
                 sensors[attribute_name] = attribute_config.get("name")
             elif attribute_config.get("type") in EXTRA_CONTROL and not attribute_config.get("default"):
                 switches[attribute_name] = attribute_config.get("name")
-        ip_address = self._config_entry.options.get(
-            CONF_IP_ADDRESS, None
-        )
-        if ip_address is None:
-            ip_address = self._config_entry.data.get(
-                CONF_IP_ADDRESS, None
-            )
+        
         refresh_interval = self._config_entry.options.get(
             CONF_REFRESH_INTERVAL, 30
         )
@@ -470,10 +454,6 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
             CONF_CUSTOMIZE, ""
         )
         data_schema = vol.Schema({
-            vol.Required(
-                CONF_IP_ADDRESS,
-                default=ip_address
-            ): str,
             vol.Required(
                 CONF_REFRESH_INTERVAL,
                 default=refresh_interval

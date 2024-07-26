@@ -14,11 +14,6 @@ _LOGGER = logging.getLogger(__name__)
 clouds = {
     "珠海U家": {
         "class_name": "UCloud",
-        "app_id": "900",
-        "app_key": "46579c15",
-        "login_key": "ad0ee21d48a64bf49f4fb583ab76e799",
-        "iot_key": bytes.fromhex(format(9795516279659324117647275084689641883661667, 'x')).decode(),
-        "hmac_key": bytes.fromhex(format(117390035944627627450677220413733956185864939010425, 'x')).decode(),
         "api_url": "https://ucloud.taichuan.net",
     }
 }
@@ -67,35 +62,7 @@ class TaichuanCloud:
         return {}
 
     async def _api_request(self, Interface,endpoint: str, data: dict, header=None) -> dict | None:
-        header = header or {}
-        if not data.get("client_id"):
-            data.update({
-                "reqId": "uhome.android" 
-            })
-        if not data.get("client_secret"):
-            data.update({
-                "client_secret": "123456"
-            })
-
-        if not data.get("grant_type"):
-            data.update({
-                "grant_type": "password"
-            })
-        
-        if not data.get("scope"):
-            data.update({
-                "scope": "client_id=uhome.android"
-            })
-
-        if not date.get("username"):
-            date.update({
-                "username": "17375830293"
-            })
-        if not date.get("password"):
-            data.update({
-                "password": quote(_password)
-            })
-        
+        header = header or {}      
         url = self._api_url + endpoint
         dump_data = json.dumps(data)
         #sign = self._security.sign("", dump_data, random)
@@ -204,14 +171,14 @@ class UCloud(TaichuanCloud):
             "client_id": "uhome.android",
             "client_secret": "123456",
             "grant_type": "password",
-            "scope": "client_id=uhome.android",
-            "username": username,
-            "password": quote(password),
+            "scope": "openid profile uhome uhome.rke uhome.o2o uhome.park",
+            "username": self._username,
+            "password": self._password
         }
         
         if response := await self._api_request(
             "POST",
-            endpoint="/system/token",
+            endpoint="/connect/token",
             data=data
         ):
         #self._access_token = response["mdata"]["accessToken"]
@@ -225,7 +192,7 @@ class UCloud(TaichuanCloud):
                 _LOGGER.info(f"response:[{response}]")
                 return True
             else:
-                _LOGGER.error(f"login error,endpoint[{endpoint}],data[{data}]")
+                _LOGGER.error(f"login error,data[{data}]")
                 return False
 
     async def list_dev(self):
@@ -297,6 +264,7 @@ class UCloud(TaichuanCloud):
             return appliances
         return None
 
+    """ 
     async def get_device_info(self, device_id: int):
         data = {
             "applianceCode": device_id
@@ -324,39 +292,7 @@ class UCloud(TaichuanCloud):
             if device_info.get("model") is None or len(device_info.get("model")) == 0:
                 device_info["model"] = device_info["sn8"]
             return device_info
-        return None
-
-    async def download_lua(
-            self, path: str,
-            device_type: int,
-            sn: str,
-            model_number: str | None,
-            manufacturer_code: str = "0000",
-    ):
-        data = {
-            "applianceSn": sn,
-            "applianceType": "0x%02X" % device_type,
-            "applianceMFCode": manufacturer_code,
-            'version': "0",
-            "iotAppId": self._app_id
-        }
-        fnm = None
-        if response := await self._api_request(
-            endpoint="/v1/appliance/protocol/lua/luaGet",
-            data=data
-        ):
-            res = await self._session.get(response["url"])
-            if res.status == 200:
-                lua = await res.text()
-                if lua:
-                    stream = ('local bit = require "bit"\n' +
-                              self._security.aes_decrypt_with_fixed_key(lua))
-                    stream = stream.replace("\r\n", "\n")
-                    fnm = f"{path}/{response['fileName']}"
-                    with open(fnm, "w") as fp:
-                        fp.write(stream)
-        return fnm
-
+        return None """
 '''
 class MSmartHomeCloud(TaichuanCloud):
     def __init__(
