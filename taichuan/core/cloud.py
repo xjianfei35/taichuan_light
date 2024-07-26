@@ -66,7 +66,7 @@ class TaichuanCloud:
             "Connection": "keep-alive",
         })
 
-        if self._access_token is not None:
+        if self._access_token is not None and self._access_token_type is not None:
             header.update({
                 "Authorization": self._access_token_type+" "+self._access_token
             })
@@ -76,9 +76,9 @@ class TaichuanCloud:
             raw = await r.read()
             _LOGGER.info(f"Taichuan cloud API url: {url}, data: {data}, response: {raw}")
         except Exception as e:
-            _LOGGER.warning(f"Taichuan cloud API error, url: {url}, error: {repr(e)}")
+            _LOGGER.warning(f"Taichuan cloud API error, url: {url}, data:{data},error: {repr(e)}")
         
-        if int(response["code"]) == 0 and "data" in response:
+        if int(response["code"]) == 0:
             return response["data"]
         return None
 
