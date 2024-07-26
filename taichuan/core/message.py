@@ -225,7 +225,7 @@ class NewProtocolMessageBody(MessageBody):
                 pos += (3 + length)
         except IndexError:
             # Some device used non-standard new-protocol(美的乐享三代中央空调?)
-            _LOGGER.debug(f"Non-standard new-protocol {self.data.hex()}")
+            _LOGGER.info(f"Non-standard new-protocol {self.data.hex()}")
         return result
 
 

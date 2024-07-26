@@ -60,7 +60,7 @@ class TaichuanDADevice(TaichuanDevice):
 
     def process_message(self, msg):
         message = MessageDCResponse(msg)
-        _LOGGER.debug(f"[{self.device_id}] Received: {message}")
+        _LOGGER.info(f"[{self.device_id}] Received: {message}")
         new_status = {}
         progress = ["Prog0", "Prog1", "Prog2", "Prog3",
                     "Prog4", "Prog5", "Prog6", "Prog7"]

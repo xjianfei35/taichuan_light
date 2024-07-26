@@ -69,7 +69,7 @@ class TaichuanFBDevice(TaichuanDevice):
 
     def process_message(self, msg):
         message = MessageFBResponse(msg)
-        _LOGGER.debug(f"[{self.device_id}] Received: {message}")
+        _LOGGER.info(f"[{self.device_id}] Received: {message}")
         new_status = {}
         for status in self._attributes.keys():
             if hasattr(message, str(status)):

@@ -125,7 +125,7 @@ class Taichuan34Device(TaichuanDevice):
 
     def process_message(self, msg):
         message = Message34Response(msg)
-        _LOGGER.debug(f"[{self.device_id}] Received: {message}")
+        _LOGGER.info(f"[{self.device_id}] Received: {message}")
         new_status = {}
         for status in self._attributes.keys():
             if hasattr(message, str(status)):

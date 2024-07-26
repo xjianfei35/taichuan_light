@@ -79,7 +79,7 @@ class TaichuanEDDevice(TaichuanDevice):
 
     def process_message(self, msg):
         message = MessageEDResponse(msg)
-        _LOGGER.debug(f"[{self.device_id}] Received: {message}")
+        _LOGGER.info(f"[{self.device_id}] Received: {message}")
         new_status = {}
         if hasattr(message, "device_class"):
             self._device_class = message.device_class

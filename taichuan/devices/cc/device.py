@@ -95,7 +95,7 @@ class TaichuanCCDevice(TaichuanDevice):
 
     def process_message(self, msg):
         message = MessageCCResponse(msg)
-        _LOGGER.debug(f"[{self.device_id}] Received: {message}")
+        _LOGGER.info(f"[{self.device_id}] Received: {message}")
         new_status = {}
         fan_speed = None
         for status in self._attributes.keys():

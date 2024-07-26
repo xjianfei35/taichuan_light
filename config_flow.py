@@ -228,7 +228,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     CONF_TOKEN: storage_device.get(CONF_TOKEN),
                     CONF_KEY: storage_device.get(CONF_KEY)
                 }
-                _LOGGER.debug(f"Loaded configuration for device {device_id} from storage")
+                _LOGGER.info(f"Loaded configuration for device {device_id} from storage")
                 return await self.async_step_manually()
             else:
                 if CONF_ACCOUNT not in self.account.keys():
@@ -258,7 +258,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     self.found_device[CONF_SUBTYPE] = device_info.get("model_number")
                 if device.get(CONF_PROTOCOL) == 3:
                     if self.account[CONF_SERVER] == "美的美居":
-                        _LOGGER.debug(f"Try to get the Token and the Key use the preset MSmartHome account")
+                        _LOGGER.info(f"Try to get the Token and the Key use the preset MSmartHome account")
                         self.cloud = get_taichuan_cloud(
                             "MSmartHome",
                             self.session,
@@ -411,7 +411,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
     def __init__(self, config_entry: config_entries.ConfigEntry):
         self._config_entry = config_entry
         self._device_type = config_entry.data.get(CONF_TYPE)
-        _LOGGER.debug(f"_device_type[{_self._device_type}]")
+        _LOGGER.info(f"_device_type[{_self._device_type}]")
         if self._device_type is None:
             self._device_type = 0xac
         if CONF_SENSORS in self._config_entry.options:

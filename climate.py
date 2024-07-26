@@ -198,7 +198,7 @@ class TaichuanClimate(TaichuanEntity, ClimateEntity):
         try:
             self.schedule_update_ha_state()
         except Exception as e:
-            _LOGGER.debug(f"Entity {self.entity_id} update_state {repr(e)}, status = {status}")
+            _LOGGER.info(f"Entity {self.entity_id} update_state {repr(e)}, status = {status}")
 
     def turn_aux_heat_on(self) -> None:
         self._device.set_attribute(attr="aux_heating", value=True)

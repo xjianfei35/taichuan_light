@@ -81,7 +81,7 @@ class Taichuan13Device(TaichuanDevice):
 
     def process_message(self, msg):
         message = Message13Response(msg)
-        _LOGGER.debug(f"[{self.device_id}] Received: {message}")
+        _LOGGER.info(f"[{self.device_id}] Received: {message}")
         new_status = {}
         if hasattr(message, "control_success"):
             new_status = {"control_success", message.control_success}

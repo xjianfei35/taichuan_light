@@ -109,4 +109,4 @@ class TaichuanLight(TaichuanEntity, LightEntity):
         try:
             self.schedule_update_ha_state()
         except Exception as e:
-            _LOGGER.debug(f"Entity {self.entity_id} update_state {repr(e)}, status = {status}")
+            _LOGGER.info(f"Entity {self.entity_id} update_state {repr(e)}, status = {status}")

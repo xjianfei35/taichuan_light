@@ -154,7 +154,7 @@ class TaichuanACDevice(TaichuanDevice):
 
     def process_message(self, msg):
         message = MessageACResponse(msg, self._power_analysis_method)
-        _LOGGER.debug(f"[{self.device_id}] Received: {message}")
+        _LOGGER.info(f"[{self.device_id}] Received: {message}")
         new_status = {}
         has_fresh_air = False
         if hasattr(message, "used_subprotocol"):

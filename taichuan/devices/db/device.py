@@ -60,7 +60,7 @@ class TaichuanDBDevice(TaichuanDevice):
 
     def process_message(self, msg):
         message = MessageDBResponse(msg)
-        _LOGGER.debug(f"[{self.device_id}] Received: {message}")
+        _LOGGER.info(f"[{self.device_id}] Received: {message}")
         new_status = {}
         progress = ["Idle", "Spin", "Rinse", "Wash", "Pre-wash",
                     "Dry", "Weight", "Hi-speed Spin", "Unknown"]

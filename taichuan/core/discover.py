@@ -46,7 +46,7 @@ def discover(discover_type=None, ip_address=None):
         addrs = enum_all_broadcast()
     else:
         addrs = [ip_address]
-    _LOGGER.debug(f"All addresses for broadcast: {addrs}")
+    _LOGGER.info(f"All addresses for broadcast: {addrs}")
     for addr in addrs:
         try:
             sock.sendto(BROADCAST_MSG, (addr, 6445))
@@ -57,7 +57,7 @@ def discover(discover_type=None, ip_address=None):
         try:
             data, addr = sock.recvfrom(512)
             ip = addr[0]
-            _LOGGER.debug(f"Received response from {addr}: {data.hex()}")
+            _LOGGER.info(f"Received response from {addr}: {data.hex()}")
             if len(data) >= 104 and (data[:2].hex() == "5a5a" or data[8:10].hex() == "5a5a"):
                 if data[:2].hex() == "5a5a":
                     protocol = 2
@@ -72,7 +72,7 @@ def discover(discover_type=None, ip_address=None):
                     continue
                 encrypt_data = data[40:-16]
                 reply = security.aes_decrypt(encrypt_data)
-                _LOGGER.debug(f"Declassified reply: {reply.hex()}")
+                _LOGGER.info(f"Declassified reply: {reply.hex()}")
                 ssid = reply[41:41 + reply[40]].decode("utf-8")
                 device_type = ssid.split("_")[1]
                 port = bytes2port(reply[4:8])
@@ -107,9 +107,9 @@ def discover(discover_type=None, ip_address=None):
             }
             if len(discover_type) == 0 or device.get("type") in discover_type:
                 found_devices[device_id] = device
-                _LOGGER.debug(f"Found a supported device: {device}")
+                _LOGGER.info(f"Found a supported device: {device}")
             else:
-                _LOGGER.debug(f"Found a unsupported device: {device}")
+                _LOGGER.info(f"Found a unsupported device: {device}")
         except socket.timeout:
             break
         except socket.error as e:
@@ -149,7 +149,7 @@ def get_device_info(device_ip, device_port: int):
             sock.settimeout(8)
             device_address = (device_ip, device_port)
             sock.connect(device_address)
-            _LOGGER.debug(f"Sending to {device_ip}:{device_port} {DEVICE_INFO_MSG.hex()}")
+            _LOGGER.info(f"Sending to {device_ip}:{device_port} {DEVICE_INFO_MSG.hex()}")
             sock.sendall(DEVICE_INFO_MSG)
             response = sock.recv(512)
     except socket.timeout:

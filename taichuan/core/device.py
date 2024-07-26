@@ -122,26 +122,26 @@ class TaichuanDevice(threading.Thread):
         try:
             self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self._socket.settimeout(10)
-            _LOGGER.debug(f"[{self._device_id}] Connecting to {self._ip_address}:{self._port}")
+            _LOGGER.info(f"[{self._device_id}] Connecting to {self._ip_address}:{self._port}")
             self._socket.connect((self._ip_address, self._port))
-            _LOGGER.debug(f"[{self._device_id}] Connected")
+            _LOGGER.info(f"[{self._device_id}] Connected")
             if self._protocol == 3:
                 self.authenticate()
-            _LOGGER.debug(f"[{self._device_id}] Authentication success")
+            _LOGGER.info(f"[{self._device_id}] Authentication success")
             if refresh_status:
                 self.refresh_status(wait_response=True)
             self.enable_device(True)
             return True
         except socket.timeout:
-            _LOGGER.debug(f"[{self._device_id}] Connection timed out")
+            _LOGGER.info(f"[{self._device_id}] Connection timed out")
         except socket.error:
-            _LOGGER.debug(f"[{self._device_id}] Connection error")
+            _LOGGER.info(f"[{self._device_id}] Connection error")
         except AuthException:
-            _LOGGER.debug(f"[{self._device_id}] Authentication failed")
+            _LOGGER.info(f"[{self._device_id}] Authentication failed")
         except ResponseException:
-            _LOGGER.debug(f"[{self._device_id}] Unexpected response received")
+            _LOGGER.info(f"[{self._device_id}] Unexpected response received")
         except RefreshFailed:
-            _LOGGER.debug(f"[{self._device_id}] Refresh status is timed out")
+            _LOGGER.info(f"[{self._device_id}] Refresh status is timed out")
         except Exception as e:
             _LOGGER.error(f"[{self._device_id}] Unknown error: {e.__traceback__.tb_frame.f_globals['__file__']}, "
                           f"{e.__traceback__.tb_lineno}, {repr(e)}")
@@ -151,7 +151,7 @@ class TaichuanDevice(threading.Thread):
     def authenticate(self):
         request = self._security.encode_8370(
             self._token, MSGTYPE_HANDSHAKE_REQUEST)
-        _LOGGER.debug(f"[{self._device_id}] Handshaking")
+        _LOGGER.info(f"[{self._device_id}] Handshaking")
         self._socket.send(request)
         response = self._socket.recv(512)
         if len(response) < 20:
@@ -169,7 +169,7 @@ class TaichuanDevice(threading.Thread):
         if self._socket is not None:
             self._socket.send(data)
         else:
-            _LOGGER.debug(f"[{self._device_id}] Send failure, device disconnected, data: {data.hex()}")
+            _LOGGER.info(f"[{self._device_id}] Send failure, device disconnected, data: {data.hex()}")
 
     def send_message_v3(self, data, msg_type=MSGTYPE_ENCRYPTED_REQUEST):
         data = self._security.encode_8370(data, msg_type)
@@ -177,7 +177,7 @@ class TaichuanDevice(threading.Thread):
 
     def build_send(self, cmd):
         data = cmd.serialize()
-        _LOGGER.debug(f"[{self._device_id}] Sending: {cmd}")
+        _LOGGER.info(f"[{self._device_id}] Sending: {cmd}")
         msg = PacketBuilder(self._device_id, data).finalize()
         self.send_message(msg)
 
@@ -205,7 +205,7 @@ class TaichuanDevice(threading.Thread):
                     except socket.timeout:
                         error_count += 1
                         self._unsupported_protocol.append(cmd.__class__.__name__)
-                        _LOGGER.debug(f"[{self._device_id}] Does not supports "
+                        _LOGGER.info(f"[{self._device_id}] Does not supports "
                                       f"the protocol {cmd.__class__.__name__}, ignored")
                     except ResponseException:
                         error_count += 1
@@ -218,9 +218,9 @@ class TaichuanDevice(threading.Thread):
         if msg[9] == MessageType.query_appliance:
             message = MessageApplianceResponse(msg)
             self._appliance_query = False
-            _LOGGER.debug(f"[{self.device_id}] Received: {message}")
+            _LOGGER.info(f"[{self.device_id}] Received: {message}")
             self._protocol_version = message.protocol_version
-            _LOGGER.debug(f"[{self._device_id}] Device protocol version: {self._protocol_version}")
+            _LOGGER.info(f"[{self._device_id}] Device protocol version: {self._protocol_version}")
             return False
         return True
 
@@ -252,7 +252,7 @@ class TaichuanDevice(threading.Thread):
                             if len(status) > 0:
                                 self.update_all(status)
                             else:
-                                _LOGGER.debug(f"[{self._device_id}] Unidentified protocol")
+                                _LOGGER.info(f"[{self._device_id}] Unidentified protocol")
                     except Exception as e:
                         _LOGGER.error(f"[{self._device_id}] Error in process message, msg = {decrypted.hex()}")
                 else:
@@ -282,7 +282,7 @@ class TaichuanDevice(threading.Thread):
         try:
             self.build_send(cmd)
         except socket.error as e:
-            _LOGGER.debug(f"[{self._device_id}] Interface send_command failure, {repr(e)}, "
+            _LOGGER.info(f"[{self._device_id}] Interface send_command failure, {repr(e)}, "
                           f"cmd_type: {cmd_type}, cmd_body: {cmd_body.hex()}")
 
     def send_heartbeat(self):
@@ -293,7 +293,7 @@ class TaichuanDevice(threading.Thread):
         self._updates.append(update)
 
     def update_all(self, status):
-        _LOGGER.debug(f"[{self._device_id}] Status update: {status}")
+        _LOGGER.info(f"[{self._device_id}] Status update: {status}")
         for update in self._updates:
             update(status)
 
@@ -321,7 +321,7 @@ class TaichuanDevice(threading.Thread):
 
     def set_ip_address(self, ip_address):
         if self._ip_address != ip_address:
-            _LOGGER.debug(f"[{self._device_id}] Update IP address to {ip_address}")
+            _LOGGER.info(f"[{self._device_id}] Update IP address to {ip_address}")
             self._ip_address = ip_address
             self.close_socket()
 
@@ -356,7 +356,7 @@ class TaichuanDevice(threading.Thread):
                         raise socket.error("Connection closed by peer")
                     result = self.parse_message(msg)
                     if result == ParseMessageResult.ERROR:
-                        _LOGGER.debug(f"[{self._device_id}] Message 'ERROR' received")
+                        _LOGGER.info(f"[{self._device_id}] Message 'ERROR' received")
                         self.close_socket()
                         break
                     elif result == ParseMessageResult.SUCCESS:
@@ -364,12 +364,12 @@ class TaichuanDevice(threading.Thread):
                 except socket.timeout:
                     timeout_counter = timeout_counter + 1
                     if timeout_counter >= 120:
-                        _LOGGER.debug(f"[{self._device_id}] Heartbeat timed out")
+                        _LOGGER.info(f"[{self._device_id}] Heartbeat timed out")
                         self.close_socket()
                         break
                 except socket.error as e:
                     if self._is_run:
-                        _LOGGER.debug(f"[{self._device_id}] Socket error {repr(e)}")
+                        _LOGGER.info(f"[{self._device_id}] Socket error {repr(e)}")
                         self.close_socket()
                     break
                 except Exception as e:

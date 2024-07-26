@@ -112,7 +112,7 @@ class TaichuanCloud:
         try:
             r = await self._session.request("POST", url, headers=header, data=dump_data, timeout=10)
             raw = await r.read()
-            _LOGGER.debug(f"Taichuan cloud API url: {url}, data: {data}, response: {raw}")
+            _LOGGER.info(f"Taichuan cloud API url: {url}, data: {data}, response: {raw}")
         except Exception as e:
             _LOGGER.warning(f"Taichuan cloud API error, url: {url}, error: {repr(e)}")
         
@@ -221,7 +221,7 @@ class UCloud(TaichuanCloud):
                 self._access_token_type = response["token_type"]
                 self._expire_in = response["expire_in"] 
                 self._scope = response["scope"]
-                _LOGGER.debug(f"response:[{response}]")
+                _LOGGER.info(f"response:[{response}]")
                 return True
             else:
                 _LOGGER.error(f"login error,endpoint[{endpoint}],data[{data}]")
@@ -582,7 +582,7 @@ class TaichuanAirCloud(TaichuanCloud):
                 with self._api_lock:
                     r = await self._session.request("POST", url, headers=header, data=data, timeout=10)
                     raw = await r.read()
-                    _LOGGER.debug(f"Taichuan cloud API url: {url}, data: {data}, response: {raw}")
+                    _LOGGER.info(f"Taichuan cloud API url: {url}, data: {data}, response: {raw}")
                     response = json.loads(raw)
                     break
             except Exception as e:

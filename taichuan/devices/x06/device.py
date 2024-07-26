@@ -95,7 +95,7 @@ class Taichuan06Device(TaichuanDevice):
 
     def process_message(self, msg):
         message = Message06Response(msg)
-        _LOGGER.debug(f"[{self.device_id}] Received: {message}")
+        _LOGGER.info(f"[{self.device_id}] Received: {message}")
         new_status = {}
         self._fields = getattr(message, "fields")
         for status in self._attributes.keys():
