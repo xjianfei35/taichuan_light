@@ -54,6 +54,8 @@ class TaichuanCloud:
         self._access_token = None
         self._expire_in = None
         self._access_token_type = None 
+        self._session = session
+        
 
     def _make_general_data(self):
         return {}
