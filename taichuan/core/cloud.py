@@ -183,9 +183,9 @@ class UCloud(TaichuanCloud):
             "client_id": "uhome.android",
             "client_secret": "123456",
             "grant_type": "password",
-            "scope": "openid",
+            "scope": "uhome",
             "username": self._username,
-            "password": "TCmm!234" 
+            "password": self._password 
         }
         
         if response := await self._api_request(
