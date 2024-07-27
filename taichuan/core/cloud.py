@@ -140,10 +140,10 @@ class TaichuanCloud:
     async def list_home(self) -> dict | None:
         return {1: "My home"}
 
-    async def list_dev(self) -> dict | None:
+    async def list_dev(self) -> dict:
         raise NotImplementedError()
     
-    async def list_scene(self) -> dict | None:
+    async def list_scene(self) -> dict:
         raise NotImplementedError()
 
     async def list_appliances(self, home_id) -> dict | None:
@@ -197,7 +197,7 @@ class UCloud(TaichuanCloud):
         ):
         #self._access_token = response["mdata"]["accessToken"]
         #获取bearer token
-            _LOGGER.info(f"response[{response}]")
+            #_LOGGER.info(f"response[{response}]")
             if(response["access_token"]!=""):
                 self._access_token = response["access_token"]
                 self._access_token_type = response["token_type"]
@@ -209,18 +209,19 @@ class UCloud(TaichuanCloud):
                 _LOGGER.error(f"login error,data[{data}]")
                 return False
 
-    async def list_dev(self) -> dict | None:
+    async def list_dev(self) -> dict:
         devices = {}
         if response := await self._api_request(
             "GET",
             endpoint="/smarthome/api/v2/ctl/getDeviceSchemaList?num=C3201224000275&machineType=2003&timeout=6",
             data={}
         ):
-            _LOGGER.info(f"response[{response}]")
+            #_LOGGER.info(f"response[{response}]")
             if(response["code"]==0):
-                devices = response["data"]["devices"]
+                devices_json = response["data"]["devices"]
+                device = json.loads(devices_json)
         return devices
-    async def list_scene(self):
+    async def list_scene(self) -> dict:
         scenes = {}
         if response := await self._api_request(
             "GET",
@@ -228,7 +229,8 @@ class UCloud(TaichuanCloud):
             data={}
         ):
             if(response["code"]==0):
-                scenes = response["data"]
+                scenes_json = response["data"]
+                scenes = json.loads(scenes_json)
         return scenes
 
     async def list_home(self):
