@@ -204,7 +204,7 @@ class UCloud(TaichuanCloud):
                 _LOGGER.error(f"login error,data[{data}]")
                 return False
 
-    async def list_dev(self):
+    async def list_dev(self) ->dict|None:
         devices = {}
         if response := await self._api_request(
             "GET",
