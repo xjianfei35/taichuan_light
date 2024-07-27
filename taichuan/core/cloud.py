@@ -140,6 +140,9 @@ class TaichuanCloud:
 
     async def list_dev(self)  ->dict | None:
         raise NotImplementedError()
+    
+    async def list_scene(self)  ->dict | None:
+        raise NotImplementedError()
 
     async def list_appliances(self, home_id) -> dict | None:
         raise NotImplementedError()
@@ -198,13 +201,13 @@ class UCloud(TaichuanCloud):
                 self._access_token_type = response["token_type"]
                 self._expire_in = response["expires_in"] 
                 self._scope = response["scope"]
-                _LOGGER.info(f"response:[{response}]")
+                #_LOGGER.info(f"response:[{response}]")
                 return True
             else:
                 _LOGGER.error(f"login error,data[{data}]")
                 return False
 
-    async def list_dev(self) ->dict|None:
+    async def list_dev(self)  ->dict | None:
         devices = {}
         if response := await self._api_request(
             "GET",
