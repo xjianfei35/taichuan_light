@@ -78,7 +78,14 @@ class TaichuanCloud:
             })
         response: dict = {"error": "invalid client"}
         try:
-            r =  self._session.request(url, headers=header, data=dump_data, timeout=10)
+            if(Interface == "POST"):
+                r =  self._session.post(url, headers=header, data=dump_data, timeout=10)
+            elif(Interface == "GET"):
+                r =  self._session.post(url, headers=header, data=dump_data, timeout=10)
+            elif(Interface == "PATCH"):
+                r =  self._session.patch(url, headers=header, data=dump_data, timeout=10)
+            else:
+                r =  self._session.put(url, headers=header, data=dump_data, timeout=10)
             raw = await r.read()
             _LOGGER.info(f"Taichuan cloud API url: {url}, data: {data}, response: {raw}")
         except Exception as e:
