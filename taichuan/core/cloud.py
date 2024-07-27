@@ -77,22 +77,24 @@ class TaichuanCloud:
                 "Authorization": self._access_token_type+" "+self._access_token
             })
         response: dict = {"error": "invalid client"}
+        data = {}
         try:
             if(Interface == "POST"):
-                r =  self._session.post(url, headers=header, data=dump_data, timeout=10)
+                async with self._session.post(url, headers=header, data=dump_data, timeout=10) as response:
+                    data = json.loads(await response.txt())
             elif(Interface == "GET"):
-                r =  self._session.post(url, headers=header, data=dump_data, timeout=10)
+                async with  self._session.get(url, headers=header, data=dump_data, timeout=10) as response:
+                    data = json.loads(await response.txt())
             elif(Interface == "PATCH"):
-                r =  self._session.patch(url, headers=header, data=dump_data, timeout=10)
+                async with  self._session.patch(url, headers=header, data=dump_data, timeout=10) as response:
+                    data = json.loads(await response.txt())
             else:
-                r =  self._session.put(url, headers=header, data=dump_data, timeout=10)
-            raw = await r.read()
-            _LOGGER.info(f"Taichuan cloud API url: {url}, data: {data}, response: {raw}")
+                async with  self._session.put(url, headers=header, data=dump_data, timeout=10) as response:
+                    data = json.loads(await response.txt())
+            return data
         except Exception as e:
             _LOGGER.warning(f"Taichuan cloud API error, url: {url}, data:{dump_data},error: {repr(e)}")
         
-        if int(response["code"]) == 0:
-            return response["data"]
         return None
 
     async def _get_login_id(self) -> str | None:
