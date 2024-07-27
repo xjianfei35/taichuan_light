@@ -196,7 +196,7 @@ class UCloud(TaichuanCloud):
             if(response["access_token"]!=""):
                 self._access_token = response["access_token"]
                 self._access_token_type = response["token_type"]
-                self._expire_in = response["expire_in"] 
+                self._expire_in = response["expires_in"] 
                 self._scope = response["scope"]
                 _LOGGER.info(f"response:[{response}]")
                 return True
