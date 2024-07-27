@@ -81,16 +81,16 @@ class TaichuanCloud:
         try:
             if(Interface == "POST"):
                 async with self._session.post(url, headers=header, data=dump_data, timeout=10) as response:
-                    data = json.loads(await response.txt())
+                    data = json.loads(await response.text())
             elif(Interface == "GET"):
                 async with  self._session.get(url, headers=header, data=dump_data, timeout=10) as response:
-                    data = json.loads(await response.txt())
+                    data = json.loads(await response.text())
             elif(Interface == "PATCH"):
                 async with  self._session.patch(url, headers=header, data=dump_data, timeout=10) as response:
-                    data = json.loads(await response.txt())
+                    data = json.loads(await response.text())
             else:
                 async with  self._session.put(url, headers=header, data=dump_data, timeout=10) as response:
-                    data = json.loads(await response.txt())
+                    data = json.loads(await response.text())
             return data
         except Exception as e:
             _LOGGER.warning(f"Taichuan cloud API error, url: {url}, data:{dump_data},error: {repr(e)}")
@@ -139,7 +139,7 @@ class TaichuanCloud:
         return {1: "My home"}
 
     async def list_dev(self)  ->dict | None:
-        raise NotImplementedError();
+        raise NotImplementedError()
 
     async def list_appliances(self, home_id) -> dict | None:
         raise NotImplementedError()
