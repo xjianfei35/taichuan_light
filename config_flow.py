@@ -218,10 +218,10 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 self.devices = self.cloud.list_dev()
                 _LOGGER.debug(f"_list_dev[{self.devices}]")
                 self.available_device = {}
-                for device in self.devices:
-                    device_id = device.get("id")
-                    if not self._already_configured(device_id):
-                        self.available_device[device_id] = f"{device_id} ({self.supports.get(device.get(CONF_TYPE))})"
+                #for device in self.devices.items():
+                #    device_id = device.get("id")
+                #    if not self._already_configured(device_id):
+                #        self.available_device[device_id] = f"{device_id} ({self.supports.get(device.get(CONF_TYPE))})"
 
                 if(len(self.available_device)>0):
                     return await self.async_step_list()

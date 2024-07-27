@@ -195,15 +195,11 @@ class UCloud(TaichuanCloud):
             endpoint="/connect/token",
             data=data
         ):
-        #self._access_token = response["mdata"]["accessToken"]
-        #获取bearer token
-            #_LOGGER.info(f"response[{response}]")
             if(response["access_token"]!=""):
                 self._access_token = response["access_token"]
                 self._access_token_type = response["token_type"]
                 self._expire_in = response["expires_in"] 
                 self._scope = response["scope"]
-                #_LOGGER.info(f"response:[{response}]")
                 return True
             else:
                 _LOGGER.error(f"login error,data[{data}]")
@@ -216,7 +212,6 @@ class UCloud(TaichuanCloud):
             endpoint="/smarthome/api/v2/ctl/getDeviceSchemaList?num=C3201224000275&machineType=2003&timeout=6",
             data={}
         ):
-            #_LOGGER.info(f"response[{response}]")
             if(response["code"]==0):
                 devices_json = response["data"]["devices"]
                 device = json.loads(devices_json)
