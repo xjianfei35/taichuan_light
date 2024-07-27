@@ -78,6 +78,7 @@ class TaichuanCloud:
             })
         response: dict = {"error": "invalid client"}
         data = {}
+        _LOGGER.debug(f"url[{url}],dump_data[{dump_data}],headers[{header}]")
         try:
             if(Interface == "POST"):
                 async with self._session.post(url, headers=header, data=dump_data, timeout=10) as response:
@@ -91,6 +92,7 @@ class TaichuanCloud:
             else:
                 async with  self._session.put(url, headers=header, data=dump_data, timeout=10) as response:
                     data = json.loads(await response.text())
+            _LOGGER.debug(f"data[{data}]")
             return data
         except Exception as e:
             _LOGGER.warning(f"Taichuan cloud API error, url: {url}, data:{dump_data},error: {repr(e)}")
