@@ -140,10 +140,10 @@ class TaichuanCloud:
     async def list_home(self) -> dict | None:
         return {1: "My home"}
 
-    async def list_dev(self)  ->dict | None:
+    async def list_dev(self) -> dict | None:
         raise NotImplementedError()
     
-    async def list_scene(self)  ->dict | None:
+    async def list_scene(self) -> dict | None:
         raise NotImplementedError()
 
     async def list_appliances(self, home_id) -> dict | None:
@@ -209,7 +209,7 @@ class UCloud(TaichuanCloud):
                 _LOGGER.error(f"login error,data[{data}]")
                 return False
 
-    async def list_dev(self)  ->dict | None:
+    async def list_dev(self) -> dict | None:
         devices = {}
         if response := await self._api_request(
             "GET",
