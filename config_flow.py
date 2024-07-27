@@ -217,7 +217,8 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             if user_input["action"] == "device":
                 self.devices = self.cloud.list_dev()
                 self.available_device = {}
-                for device_id, device in self.devices.items():
+                for device in self.devices.items():
+                    device_id = device.get("id")
                     if not self._already_configured(device_id):
                         self.available_device[device_id] = f"{device_id} ({self.supports.get(device.get(CONF_TYPE))})"
 

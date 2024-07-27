@@ -211,6 +211,7 @@ class UCloud(TaichuanCloud):
             endpoint="/smarthome/api/v2/ctl/getDeviceSchemaList?num=C3201224000275&machineType=2003&timeout=6",
             data={}
         ):
+            _LOGGER.info(f"response[{response}]")
             if(response["code"]==0):
                 devices = response["data"]["devices"]
         return devices
