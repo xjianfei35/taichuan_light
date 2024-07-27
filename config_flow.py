@@ -216,6 +216,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             else: """
             if user_input["action"] == "device":
                 self.devices = self.cloud.list_dev()
+                _LOGGER.debug(f"_list_dev[{self.devices}]")
                 self.available_device = {}
                 for device in self.devices.items():
                     device_id = device.get("id")
