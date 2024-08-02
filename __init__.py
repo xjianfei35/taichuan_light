@@ -6,7 +6,7 @@ from .const import (
     CONF_ACCOUNT,
     CONF_KEY,
     CONF_MODEL,
-    CONF_SUBTYPE,
+    CONF_DEVTYPE,
     CONF_REFRESH_INTERVAL,
     DEVICES,
     EXTRA_SENSOR,
@@ -124,7 +124,7 @@ async def async_setup(hass: HomeAssistant, hass_config: dict):
 async def async_setup_entry(hass: HomeAssistant, config_entry):
     _LOGGER.info(f"in async_setup_entry")
     return True
-    device_type = config_entry.data.get(CONF_TYPE)
+    device_type = config_entry.data.get(CONF_DEVTYPE)
     if device_type == CONF_ACCOUNT:
         return True
     name = config_entry.data.get(CONF_NAME)
@@ -134,32 +134,32 @@ async def async_setup_entry(hass: HomeAssistant, config_entry):
         name = f"{device_id}"
     if device_type is None:
         device_type = 0xac
-    token = config_entry.data.get(CONF_TOKEN)
-    key = config_entry.data.get(CONF_KEY)
-    ip_address = config_entry.options.get(CONF_IP_ADDRESS, None)
-    if ip_address is None:
-        ip_address = config_entry.data.get(CONF_IP_ADDRESS)
+    #token = config_entry.data.get(CONF_TOKEN)
+    #key = config_entry.data.get(CONF_KEY)
+    #ip_address = config_entry.options.get(CONF_IP_ADDRESS, None)
+    #if ip_address is None:
+    #    ip_address = config_entry.data.get(CONF_IP_ADDRESS)
     refresh_interval = config_entry.options.get(CONF_REFRESH_INTERVAL)
-    port = config_entry.data.get(CONF_PORT)
-    model = config_entry.data.get(CONF_MODEL)
-    subtype = config_entry.data.get(CONF_SUBTYPE, 0)
-    protocol = config_entry.data.get(CONF_PROTOCOL)
-    customize = config_entry.options.get(CONF_CUSTOMIZE)
-    if protocol == 3 and (key is None or key is None):
-        _LOGGER.error("For V3 devices, the key and the token is required.")
-        return False
+    #port = config_entry.data.get(CONF_PORT)
+    #model = config_entry.data.get(CONF_MODEL)
+    #subtype = config_entry.data.get(CONF_DEVTYPE, 0)
+    #protocol = config_entry.data.get(CONF_PROTOCOL)
+    #customize = config_entry.options.get(CONF_CUSTOMIZE)
+    #if protocol == 3 and (key is None or key is None):
+    #    _LOGGER.error("For V3 devices, the key and the token is required.")
+    #    return False
     device = device_selector(
         name=name,
         device_id=device_id,
         device_type=device_type,
-        ip_address=ip_address,
-        port=port,
-        token=token,
-        key=key,
-        protocol=protocol,
-        model=model,
-        subtype=subtype,
-        customize=customize,
+        #ip_address=ip_address,
+        #port=port,
+        #token=token,
+        #key=key,
+        #protocol=protocol,
+        #model=model,
+        #subtype=subtype,
+        #customize=customize,
     )
     if refresh_interval is not None:
         device.set_refresh_interval(refresh_interval)
@@ -180,7 +180,7 @@ async def async_setup_entry(hass: HomeAssistant, config_entry):
 
 async def async_unload_entry(hass: HomeAssistant, config_entry):
     return True
-    device_type = config_entry.data.get(CONF_TYPE)
+    device_type = config_entry.data.get(CONF_DEVTYPE)
     if device_type == CONF_ACCOUNT:
         return True
     device_id = config_entry.data.get(CONF_DEVICE_ID)

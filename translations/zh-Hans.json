@@ -27,15 +27,18 @@
                 "title": "登录"
             },
             "discovery": {
-                "description": "输入设备的IP地址, 输入\"auto\"自动搜索设备\n你也可以使用IP地址在指定网络中搜索, 比如`192.168.1.255`",
+                "description": "选择扫描设备或场景",
                 "title": "加载设备或场景",
                 "data": {
                     "ip_address": "IP地址"
                 }
             },
             "list":{
-                "description": "{table}",
-                "title": "设备"
+                "description": "选择你需要配置的设备ID{table}",
+                "title": "添加设备",
+                "data":{
+                    "device":"设备"
+                }
             },
             "auto": {
                 "data": {

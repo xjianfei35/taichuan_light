@@ -14,7 +14,7 @@ from .const import (
     CONF_SERVER,
     CONF_KEY,
     CONF_MODEL,
-    CONF_SUBTYPE,
+    CONF_DEVTYPE,
     CONF_REFRESH_INTERVAL
 )
 from homeassistant import config_entries
@@ -40,7 +40,7 @@ from .taichuan_device import TAICHUAN_DEVICES
 _LOGGER = logging.getLogger(__name__)
 
 #ADD_WAY = {"discovery": "Discover automatically", "manually": "Configure manually", "list": "List all appliances only"}
-ADD_WAY = {"device": "scan devices", "scene": "scan scenes"}
+ADD_WAY = {'device': 'scan devices', 'scene': 'scan scenes'}
 PROTOCOLS = {1: "V1", 2: "V2", 3: "V3"}
 STORAGE_PATH = f".storage/{DOMAIN}"
 
@@ -107,7 +107,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     @staticmethod
     def _check_storage_device(device: dict, storage_device: dict):
-        if storage_device.get(CONF_SUBTYPE) is None:
+        if storage_device.get(CONF_DEVTYPE) is None:
             return False
         #if (device.get(CONF_PROTOCOL) == 3 and
         #        (storage_device.get(CONF_TOKEN) is None or storage_device.get(CONF_KEY) is None)):
@@ -172,56 +172,37 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     async def async_step_list(self, user_input=None, error=None):
         #添加自己的设备发现方式
-        #all_devices = discover()
-        if (user_input["action"] == "device"):
-            all_devices = self.cloud.list_dev()
-            if len(all_devices) > 0:
-                table = "Appliance code|Type|IP address|SN|Supported\n:--:|:--:|:--:|:--:|:--:"
-                for device in all_devices.items():
-                    supported = device.get(CONF_TYPE) in self.supports.keys()
-                    table += f"\n{'%02X' % device.get(CONF_TYPE)}" f"{device.get('id')}|" \
-                         f"{'<font color=gree>YES</font>' if supported else '<font color=red>NO</font>'}"
+        if user_input is not None:
+            #_LOGGER.info(f"user_input[{user_input[CONF_DEVICE]}]")
+            #all_devices = self.available_device
+
+            _LOGGER.info(f"avaliable_devices[]")
+        else:
+            if len(self.devices) > 0:
+                table = "Appliance code|Type|ID|Supported\n:--:|:--:|:--:|:--:"
+                for device in self.devices:
+                    supported = device.get(CONF_DEVTYPE) in self.supports.keys()
+                    table += f"\n{'%02X' % device.get(CONF_DEVTYPE)} | {device.get(CONF_DEVTYPE)}|{device.get('id')}|{'<font color=gree>YES</font>' if supported else '<font color=red>NO</font>'}"
             else:
                 table = "Not found"
-        elif(user_input["action"]=="scene"):
-            table = "Not found"
-            """ all_scenes = self.cloud.list_scene()
-            if len(all_scenes) > 0:
-                table = "Appliance code|Type|IP address|SN|Supported\n:--:|:--:|:--:|:--:|:--:"
-                for device_id, device in all_scenes.items():
-                    supported = device.get(CONF_TYPE) in self.supports.keys()
-                    table += f"\n{device_id}|{'%02X' % device.get(CONF_TYPE)}|{device.get(CONF_IP_ADDRESS)}|" \
-                         f"{device.get('sn')}|" \
-                         f"{'<font color=gree>YES</font>' if supported else '<font color=red>NO</font>'}" """
-        return self.async_show_form(
-            step_id="list",
-            description_placeholders={"table": table},
-            errors={"base": error} if error else None
-        )
 
+            return self.async_show_form(
+                step_id="list",
+                data_schema=vol.Schema({
+                    vol.Required(CONF_DEVICE, default="device"):
+                        vol.In(list(table)),
+                }),
+                errors={"base": error} if error else None
+            )
     async def async_step_discovery(self, user_input=None, error=None):
         if user_input is not None:
-            """ if user_input[CONF_IP_ADDRESS].lower() == "auto":
-                ip_address = None
-            else:
-                ip_address = user_input[CONF_IP_ADDRESS]
-            self.devices = discover(self.supports.keys(), ip_address=ip_address)
-            self.available_device = {}
-            for device_id, device in self.devices.items():
-                if not self._already_configured(device_id, device.get(CONF_IP_ADDRESS)):
-                    self.available_device[device_id] = \
-                        f"{device_id} ({self.supports.get(device.get(CONF_TYPE))})"
-            if len(self.available_device) > 0:
-                return await self.async_step_auto()
-            else: """
             if user_input["action"] == "device":
-                self.devices = self.cloud.list_dev()
-                _LOGGER.debug(f"_list_dev[{self.devices}]")
+                self.devices = await self.cloud.list_dev()
                 self.available_device = {}
-                #for device in self.devices.items():
-                #    device_id = device.get("id")
-                #    if not self._already_configured(device_id):
-                #        self.available_device[device_id] = f"{device_id} ({self.supports.get(device.get(CONF_TYPE))})"
+                for device in self.devices:
+                    device_id = device.get("id")
+                    if not self._already_configured(device_id):
+                        self.available_device[device_id] = f"{device_id} ({self.supports.get(device.get(CONF_DEVTYPE))})"
 
                 if(len(self.available_device)>0):
                     return await self.async_step_list()
@@ -235,6 +216,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     return await self.async_step_list()
                 else:
                     return await self.async_step_discovery(error="no  scene found")
+        _LOGGER.info(f"ADD_WAY{ADD_WAY}")
         return self.async_show_form(
             step_id="discovery",
             data_schema=vol.Schema({
@@ -255,7 +237,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     CONF_TYPE: device.get(CONF_TYPE),
                     CONF_MODEL: device.get(CONF_MODEL),
                     CONF_NAME: storage_device.get(CONF_NAME),
-                    CONF_SUBTYPE: storage_device.get(CONF_SUBTYPE),
+                    CONF_DEVTYPE: storage_device.get(CONF_DEVTYPE),
                     CONF_TOKEN: storage_device.get(CONF_TOKEN),
                     CONF_KEY: storage_device.get(CONF_KEY)
                 }
@@ -283,7 +265,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 }
                 if device_info := await self.cloud.get_device_info(device_id):
                     self.found_device[CONF_NAME] = device_info.get("name")
-                    self.found_device[CONF_SUBTYPE] = device_info.get("model_number")
+                    self.found_device[CONF_DEVTYPE] = device_info.get("devType")
                 """ if device.get(CONF_PROTOCOL) == 3:
                     if self.account[CONF_SERVER] == "美的美居":
                         _LOGGER.info(f"Try to get the Token and the Key use the preset MSmartHome account")
@@ -360,7 +342,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     CONF_DEVICE_ID: user_input[CONF_DEVICE_ID],
                     CONF_TYPE: user_input[CONF_TYPE],
                     CONF_MODEL: user_input[CONF_MODEL],
-                    CONF_SUBTYPE: user_input[CONF_SUBTYPE],
+                    CONF_DEVTYPE: user_input[CONF_DEVTYPE],
                     CONF_TOKEN: user_input[CONF_TOKEN],
                     CONF_KEY: user_input[CONF_KEY],
                     }
@@ -393,8 +375,8 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     default=self.found_device.get(CONF_MODEL) if self.found_device.get(CONF_MODEL) else "Unknown"
                 ): str,
                 vol.Required(
-                    CONF_SUBTYPE,
-                    default=self.found_device.get(CONF_SUBTYPE) if self.found_device.get(CONF_SUBTYPE) else 0
+                    CONF_DEVTYPE,
+                    default=self.found_device.get(CONF_DEVTYPE) if self.found_device.get(CONF_DEVTYPE) else 0
                 ): int,
                 vol.Optional(
                     CONF_TOKEN,

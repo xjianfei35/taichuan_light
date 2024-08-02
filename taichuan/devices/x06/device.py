@@ -3,7 +3,7 @@ import json
 from .message import (
     MessageQuery,
     MessageSet,
-    Message13Response
+    Message06Response
 )
 try:
     from enum import StrEnum
@@ -22,33 +22,33 @@ class DeviceAttributes(StrEnum):
     power = "power"
 
 
-class Taichuan13Device(TaichuanDevice):
+class Taichuan06Device(TaichuanDevice):
     _effects = ["Manual", "Living", "Reading", "Mildly", "Cinema", "Night"]
 
     def __init__(
             self,
             name: str,
             device_id: int,
-            ip_address: str,
-            port: int,
-            token: str,
-            key: str,
-            protocol: int,
-            model: str,
-            subtype: int,
-            customize: str
+            #ip_address: str,
+            #port: int,
+            #token: str,
+            #key: str,
+            #protocol: int,
+            #model: str,
+            #subtype: int,
+            #customize: str
     ):
         super().__init__(
             name=name,
             device_id=device_id,
-            device_type=0x13,
-            ip_address=ip_address,
-            port=port,
-            token=token,
-            key=key,
-            protocol=protocol,
-            model=model,
-            subtype=subtype,
+            device_type=0x06,
+            #ip_address=ip_address,
+            #port=port,
+            #token=token,
+            #key=key,
+            #protocol=protocol,
+            #model=model,
+            #subtype=subtype,
             attributes={
                 DeviceAttributes.brightness: None,
                 DeviceAttributes.color_temperature: None,
@@ -58,11 +58,11 @@ class Taichuan13Device(TaichuanDevice):
             })
         self._color_temp_range = None
         self._default_color_temp_range = [2700, 6500]
-        self.set_customize(customize)
+        #self.set_customize(customize)
 
     @property
     def effects(self):
-        return Taichuan13Device._effects
+        return Taichuan06Device._effects
 
     @property
     def color_temp_range(self):
@@ -80,7 +80,7 @@ class Taichuan13Device(TaichuanDevice):
         return [MessageQuery(self._protocol_version)]
 
     def process_message(self, msg):
-        message = Message13Response(msg)
+        message = Message06Response(msg)
         _LOGGER.info(f"[{self.device_id}] Received: {message}")
         new_status = {}
         if hasattr(message, "control_success"):
@@ -92,7 +92,7 @@ class Taichuan13Device(TaichuanDevice):
                 if hasattr(message, str(status)):
                     value = getattr(message, str(status))
                     if status == DeviceAttributes.effect:
-                        self._attributes[status] = Taichuan13Device._effects[value]
+                        self._attributes[status] = Taichuan06Device._effects[value]
                     elif status == DeviceAttributes.color_temperature:
                         self._attributes[status] = self.taichuan_to_kelvin(value)
                     else:
@@ -107,7 +107,7 @@ class Taichuan13Device(TaichuanDevice):
                     DeviceAttributes.power]:
             message = MessageSet(self._protocol_version)
             if attr == DeviceAttributes.effect and value in self._effects:
-                setattr(message, str(attr), Taichuan13Device._effects.index(value))
+                setattr(message, str(attr), Taichuan06Device._effects.index(value))
             elif attr == DeviceAttributes.color_temperature:
                 setattr(message, str(attr), self.kelvin_to_taichuan(value))
             else:
@@ -126,5 +126,5 @@ class Taichuan13Device(TaichuanDevice):
             self.update_all({"color_temp_range": self._color_temp_range})
 
 
-class TaichuanAppliance(Taichuan13Device):
+class TaichuanAppliance(Taichuan06Device):
     pass

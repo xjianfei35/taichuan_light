@@ -172,6 +172,7 @@ class UCloud(TaichuanCloud):
             session: ClientSession,
             username: str,
             password: str,
+            dev_list
     ):
         super().__init__(
             session=session,
@@ -206,15 +207,16 @@ class UCloud(TaichuanCloud):
                 return False
 
     async def list_dev(self) -> dict:
-        devices = {}
+        devices = []
         if response := await self._api_request(
             "GET",
             endpoint="/smarthome/api/v2/ctl/getDeviceSchemaList?num=C3201224000275&machineType=2003&timeout=6",
             data={}
         ):
             if(response["code"]==0):
-                devices_json = response["data"]["devices"]
-                device = json.loads(devices_json)
+                devices = response["data"]["devices"]
+                dev_list = devices
+        
         return devices
     async def list_scene(self) -> dict:
         scenes = {}
@@ -224,8 +226,8 @@ class UCloud(TaichuanCloud):
             data={}
         ):
             if(response["code"]==0):
-                scenes_json = response["data"]
-                scenes = json.loads(scenes_json)
+                scenes= response["data"]
+                dev_list = scenes
         return scenes
 
     async def list_home(self):
@@ -610,6 +612,7 @@ def get_taichuan_cloud(cloud_name: str, session: ClientSession, username: str, p
             cloud_name=cloud_name,
             session=session,
             username=username,
-            password=password
+            password=password,
+            dev_list=None
         )
     return cloud

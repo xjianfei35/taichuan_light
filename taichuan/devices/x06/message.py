@@ -6,10 +6,10 @@ from ...core.message import (
 )
 
 
-class Message13Base(MessageRequest):
+class Message06Base(MessageRequest):
     def __init__(self, protocol_version, message_type, body_type):
         super().__init__(
-            device_type=0x13,
+            device_type=0x06,
             protocol_version=protocol_version,
             message_type=message_type,
             body_type=body_type
@@ -20,7 +20,7 @@ class Message13Base(MessageRequest):
         raise NotImplementedError
 
 
-class MessageQuery(Message13Base):
+class MessageQuery(Message06Base):
     def __init__(self, protocol_version):
         super().__init__(
             protocol_version=protocol_version,
@@ -34,7 +34,7 @@ class MessageQuery(Message13Base):
         ])
 
 
-class MessageSet(Message13Base):
+class MessageSet(Message06Base):
     def __init__(self, protocol_version):
         super().__init__(
             protocol_version=protocol_version,
@@ -84,7 +84,7 @@ class MessageMainLightResponseBody(MessageBody):
         super().__init__(body)
         self.control_success = body[1] > 0
 
-class Message13Response(MessageResponse):
+class Message06Response(MessageResponse):
     def __init__(self, message):
         super().__init__(message)
         if self.body_type == 0xa4:
@@ -92,4 +92,3 @@ class Message13Response(MessageResponse):
         elif self.message_type == MessageType.set and self.body_type > 0x80:
             self.set_body(MessageMainLightResponseBody(super().body))
         self.set_attr()
-
