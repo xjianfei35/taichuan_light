@@ -1,4 +1,4 @@
-from homeassistant.const import (
+""" from homeassistant.const import (
     Platform,
     TIME_DAYS,
     TIME_HOURS,
@@ -11,9 +11,15 @@ from homeassistant.const import (
     ENERGY_KILO_WATT_HOUR,
     CONCENTRATION_MICROGRAMS_PER_CUBIC_METER,
     CONCENTRATION_PARTS_PER_MILLION
+) """
+
+from homeassistant.const import(
+    Platform,
 )
-from homeassistant.components.binary_sensor import BinarySensorDeviceClass
-from homeassistant.components.sensor import SensorStateClass, SensorDeviceClass
+
+#from homeassistant.components.binary_sensor import BinarySensorDeviceClass
+#from homeassistant.components.sensor import SensorStateClass, SensorDeviceClassEASWQS
+from .taichuan.devices.x06.device import DeviceAttributes as X06Attributes
 """ from .taichuan.devices.x06.device import DeviceAttributes as X06Attributes
 from .taichuan.devices.x34.device import DeviceAttributes as X34Attributes
 from .taichuan.devices.x40.device import DeviceAttributes as X40Attributes
@@ -47,7 +53,6 @@ from .taichuan.devices.fa.device import DeviceAttributes as FAAttributes
 from .taichuan.devices.fb.device import DeviceAttributes as FBAttributes
 from .taichuan.devices.fc.device import DeviceAttributes as FCAttributes
 from .taichuan.devices.fd.device import DeviceAttributes as FDAttributes """
-from .taichuan.devices.x06.device import DeviceAttributes as X06Attributes
 
 
 TAICHUAN_DEVICES = {
@@ -55,12 +60,12 @@ TAICHUAN_DEVICES = {
         "name": "Main Light",
         "entities": {
             "light": {
-                "type": Platform.SWITCH,
+                "type": Platform.LIGHT,
                 "icon": "mdi:lightbulb",
                 "roomId": None,
-                "name": None,
+                "name": "Main Light",
                 "ctrlId": None
-            }
+            },
         }
     },
 }

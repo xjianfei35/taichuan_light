@@ -46,22 +46,6 @@
                 },
                 "description": "选择设备并添加",
                 "title": "发现新设备"
-            },
-            "manually": {
-                "data": {
-                    "name": "名称(如客厅空调)",
-                    "device_id": "设备编号",
-                    "type": "设备类型",
-                    "ip_address": "IP地址",
-                    "port": "端口",
-                    "model": "型号",
-                    "subtype": "子型号",
-                    "protocol": "协议版本",
-                    "token": "Token",
-                    "key": "Key"
-                },
-                "description": "配置设备参数",
-                "title": "新设备"
             }
         }
     },
@@ -69,13 +53,11 @@
         "step": {
             "init": {
                 "data": {
-                    "ip_address": "IP地址",
-                    "refresh_interval": "刷新间隔(设0为不进行主动刷新)",
-                    "sensors": "扩展传感器",
-                    "switches": "扩展控制",
-                    "customize": "自定义"
+                    "account": "账号",
+                    "password": "密码"
                 },
-                "title": "配置"
+                "description": "登录太川UCloud",
+                "title": "登录"
             }
         },
         "abort": {

@@ -7,15 +7,12 @@ _LOGGER = logging.getLogger(__name__)
 
 
 class TaichuanEntity(Entity):
-    def __init__(self, device, entity_key: str):
+    def __init__(self, device,entity_key: str):
         self._device = device
-        self._device.register_update(self.update_state)
         self._config = TAICHUAN_DEVICES[self._device.device_type]["entities"][entity_key]
         self._entity_key = entity_key
-        self._unique_id = f"{DOMAIN}.{self._device.device_id}_{entity_key}"
-        self.entity_id = self._unique_id
-        self._device_name = self._device.name
-    
+        self._device_name = self._device.device_name
+        _attr_unique_id = f"{self._device.device_name}{self._device.device_type}{self._device.device_id}" 
     @property
     def device(self):
         return self._device
@@ -25,32 +22,15 @@ class TaichuanEntity(Entity):
         return {
             "manufacturer": "Taichuan",
             "model": f"{TAICHUAN_DEVICES[self._device.device_type]['name']} "
-                     f"{self._device.model}"
-                     f" ({self._device.subtype})",
+                     f"{self._device.device_id}",
             "identifiers": {(DOMAIN, self._device.device_id)},
             "name": self._device_name
         }
 
     @property
-    def unique_id(self):
-        return self._unique_id
-
-    @property
-    def should_poll(self):
-        return False
-
-    @property
     def name(self):
         return f"{self._device_name} {self._config.get('name')}" if "name" in self._config \
             else self._device_name
-
-    @property
-    def available(self):
-        return self._device.available
-
-    @property
-    def icon(self):
-        return self._config.get("icon")
 
     def update_state(self, status):
         if self._entity_key in status or "available" in status:
