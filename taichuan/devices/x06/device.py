@@ -37,9 +37,15 @@ class Taichuan06Device(TaichuanDevice):
             )
 
     def set_attribute(self, attr, value): 
-        if (attr == DeviceAttributes.power):
-            setattr(self,DeviceAttributes.power,value) 
-            
+        for oattr,ovalue in self._attributes.items():
+            if(attr == oattr):
+                self._attributes[attr]=value
+    
+    def get_attribute(self, attr):
+        for oattr,ovalue in self._attributes.items():
+            if(attr==oattr):
+                return self._attributes[attr]        
+    
     @property
     def effects(self):
         return Taichuan06Device._effects

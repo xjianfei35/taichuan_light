@@ -74,7 +74,4 @@ class TaichuanDevice():
         raise NotImplementedError
 
     def get_attribute(self, attr):
-        return self._attributes.get(attr)
-
-    def get_attribute(self, attr):
-        return self._attributes.get(attr)
+        raise NotImplementedError

@@ -12,7 +12,8 @@ class TaichuanEntity(Entity):
         self._config = TAICHUAN_DEVICES[self._device.device_type]["entities"][entity_key]
         self._entity_key = entity_key
         self._device_name = self._device.device_name
-        _attr_unique_id = f"{self._device.device_name}{self._device.device_type}{self._device.device_id}" 
+        self._attr_unique_id = f"{self._device.device_name}{self._device.device_type}{self._device.device_id}" 
+        
     @property
     def device(self):
         return self._device

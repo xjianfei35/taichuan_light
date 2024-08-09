@@ -20,15 +20,6 @@ clouds = {
     }
 }
 
-default_keys = {
-    99: {
-        "token": "ee755a84a115703768bcc7c6c13d3d629aa416f1e2fd798beb9f78cbb1381d09"
-                 "1cc245d7b063aad2a900e5b498fbd936c811f5d504b2e656d4f33b3bbc6d1da3",
-        "key": "ed37bd31558a4b039aaf4e7a7a59aa7a75fd9101682045f69baf45d28380ae5c"
-    }
-}
-
-
 class TaichuanCloud:
     def __init__(
             self,
@@ -37,20 +28,9 @@ class TaichuanCloud:
             password: str,
             api_url: str,
     ):
-        '''
-        self._device_id = CloudSecurity.get_deviceid(account)
-        self._session = session
-        self._security = security
-        self._api_lock = Lock()
-        self._app_id = app_id
-        self._app_key = app_key
-        '''
         self._username= username 
         self._password = password
         self._api_url = api_url
-        self._access_token = None
-        self._expire_in = None
-        self._access_token_type = None 
         self._session = session
         
 
@@ -60,10 +40,8 @@ class TaichuanCloud:
     async def _api_request(self, Interface,endpoint: str, data: dict, header=None) -> dict | None:
         header = header or {}      
         url = self._api_url + endpoint
-        #dump_data = json.load(json.dump(data))
         data_dict = json.loads(json.dumps(data))
         dump_data = urlencode(data_dict,doseq=True)
-        #sign = self._security.sign("", dump_data, random)
         header.update({
             "content-type": "application/x-www-form-urlencoded",
             "Connection": "keep-alive",
@@ -75,7 +53,7 @@ class TaichuanCloud:
             })
         response: dict = {"error": "invalid client"}
         data = {}
-        _LOGGER.debug(f"url[{url}],dump_data[{dump_data}],headers[{header}]")
+        _LOGGER.info(f"url[{url}],dump_data[{dump_data}],headers[{header}]")
         try:
             if(Interface == "POST"):
                 async with self._session.post(url, headers=header, data=dump_data, timeout=10) as response:
@@ -89,50 +67,15 @@ class TaichuanCloud:
             else:
                 async with  self._session.put(url, headers=header, data=dump_data, timeout=10) as response:
                     data = json.loads(await response.text())
-            _LOGGER.debug(f"data[{data}]")
+            _LOGGER.info(f"data[{data}]")
             return data
         except Exception as e:
             _LOGGER.warning(f"Taichuan cloud API error, url: {url}, data:{dump_data},error: {repr(e)}")
         
         return None
 
-    async def _get_login_id(self) -> str | None:
-        data = self._make_general_data()
-        data.update({
-            "loginAccount": f"{self._account}"
-        })
-
-        if response := await self._api_request(
-            endpoint="/v1/user/login/id/get",
-            data=data
-        ):
-            return response.get("loginId")
-        return None
-
     async def login(self) -> bool:
         raise NotImplementedError()
-
-    async def get_keys(self, appliance_id: int):
-        result = {}
-        for method in [1, 2]:
-            udp_id = self._security.get_udp_id(appliance_id, method)
-            data = self._make_general_data()
-            data.update({
-                "udpid": udp_id
-            })
-            response = await self._api_request(
-                endpoint="/v1/iot/secure/getToken",
-                data=data
-            )
-            if response and "tokenlist" in response:
-                for token in response["tokenlist"]:
-                    if token["udpId"] == udp_id:
-                        result[method] = {
-                            "token": token["token"].lower(),
-                            "key": token["key"].lower()
-                        }
-        result.update(default_keys)
-        return result
 
     async def list_home(self) -> dict | None:
         return {1: "My home"}
@@ -146,22 +89,6 @@ class TaichuanCloud:
     async def list_appliances(self, home_id) -> dict | None:
         raise NotImplementedError()
 
-    async def get_device_info(self, device_id: int):
-        if response := await self.list_appliances(home_id=None):
-            if device_id in response.keys():
-                return response[device_id]
-        return None
-
-    async def download_lua(
-            self, path: str,
-            device_type: int,
-            sn: str,
-            model_number: str | None,
-            manufacturer_code: str = "0000",
-    ):
-        raise NotImplementedError()
-
-
 class UCloud(TaichuanCloud):
     def __init__(
             self,
@@ -169,7 +96,6 @@ class UCloud(TaichuanCloud):
             session: ClientSession,
             username: str,
             password: str,
-            dev_list
     ):
         super().__init__(
             session=session,
@@ -254,42 +180,6 @@ class UCloud(TaichuanCloud):
                 })
             return homes
         return None
-
-    async def list_appliances(self, home_id) -> dict | None:
-        data = {
-            "homegroupId": home_id
-        }
-
-        if response := await self._api_request(
-            endpoint="/v1/appliance/home/list/get",
-            data=data
-        ):
-            appliances = {}
-            for home in response.get("homeList") or []:
-                for room in home.get("roomList") or []:
-                    for appliance in room.get("applianceList"):
-                        try:
-                            model_number = int(appliance.get("modelNumber", 0))
-                        except ValueError:
-                            model_number = 0
-                        device_info = {
-                            "name": appliance.get("name"),
-                            "type": int(appliance.get("type"), 16),
-                            "sn": self._security.aes_decrypt(appliance.get("sn")) if appliance.get("sn") else "",
-                            "sn8": appliance.get("sn8", "00000000"),
-                            "model_number": model_number,
-                            "manufacturer_code":appliance.get("enterpriseCode", "0000"),
-                            "model": appliance.get("productModel"),
-                            "online": appliance.get("onlineStatus") == "1",
-                        }
-                        if device_info.get("sn8") is None or len(device_info.get("sn8")) == 0:
-                            device_info["sn8"] = "00000000"
-                        if device_info.get("model") is None or len(device_info.get("model")) == 0:
-                            device_info["model"] = device_info["sn8"]
-                        appliances[int(appliance["applianceCode"])] = device_info
-            return appliances
-        return None
-
 
     async def get_device_info(self, device_id: int):
         devices = {}
