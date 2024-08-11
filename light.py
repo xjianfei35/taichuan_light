@@ -6,44 +6,44 @@ from homeassistant.helpers.entity import ToggleEntity
 from homeassistant.components.light import *
 from .taichuan_device import X06Attributes
 from .taichuan.core.cloud import UCloud
+from .taichuan.devices.__init__ import device_selector
+import threading
+import asyncio
 from homeassistant.const import (
     Platform,
     CONF_DEVICE_ID,
     CONF_SWITCHES
 )
-
+_LOGGER = logging.getLogger(__name__)
 from .const import (
     DOMAIN,
     DEVICES,
 )
 
 async def async_setup_entry(hass, config_entry, async_add_entities):
+    taichuan_hub = hass.data[DOMAIN][config_entry.entry_id]
     devs = []
-    for device_id,device in hass.data[DOMAIN][DEVICES].items():
-        if device is not None and device.device_type==6:
+    devices = await taichuan_hub._ucloud.list_dev()
+    for device_id,device in devices.items():
+        if(device.device_type==6):
             for entity_key, config in TAICHUAN_DEVICES[device.device_type]["entities"].items():
                 if config["type"] == Platform.LIGHT:
-                    dev = TaichuanLight(device,entity_key)
+                    dev = TaichuanLight(device,entity_key,taichuan_hub)
                     devs.append(dev)
+    
     async_add_entities(devs)
 
 
 class TaichuanLight(TaichuanEntity,LightEntity):
-    def __init__(self, device,entity_key):
+    def __init__(self,device,entity_key,cloud):
         super().__init__(device, entity_key)
-    
+        self._cloud = cloud 
+        self._device = device
+   
     @property
     def is_on(self):
         return self._device.get_attribute(X06Attributes.power)
 
-    #@property
-    #def cloud(self):
-    #    return self._cloud
-
-    #@property
-    #def effect(self):
-    #    return self._device.get_attribute(X06Attributes.effect)
-    
     @property
     def supported_features(self) -> LightEntityFeature:
         supported_features = LightEntityFeature(SUPPORT_EFFECT)
@@ -57,11 +57,11 @@ class TaichuanLight(TaichuanEntity,LightEntity):
     def turn_on(self):
         if not self.is_on:
             self._device.set_attribute(attr=X06Attributes.power, value=True)
-    #        self._cloud.dev_opt(self._device.device_type,self._device.device_id,True)
-    
+            res = asyncio.run_coroutine_threadsafe(self._cloud.dev_opt(self._device.device_type,self._device.device_id,True),self._cloud.loop)
+
     def turn_off(self):
         self._device.set_attribute(attr=X06Attributes.power, value=False)
-    #    self._cloud.dev_opt(self._device.device_type,self._device.device_id,False)
+        res = asyncio.run_coroutine_threadsafe(self._cloud.dev_opt(self._device.device_type,self._device.device_id,False),self._cloud.loop)
 
     def update_state(self, status):
         try:

@@ -9,8 +9,10 @@ from secrets import token_hex
 from urllib.request import quote
 import json
 from urllib.parse import urlencode
+from ..devices.__init__ import device_selector
 from .security import CloudSecurity, MeijuCloudSecurity, MSmartCloudSecurity, TaichuanAirSecurity
-
+import asyncio
+import aiohttp
 _LOGGER = logging.getLogger(__name__)
 
 clouds = {
@@ -32,47 +34,28 @@ class TaichuanCloud:
         self._password = password
         self._api_url = api_url
         self._session = session
+        self._access_token=None
+        self._access_token_type=None
+        self._expire_in=None
+        self._scope=None
         
 
     def _make_general_data(self):
         return {}
 
-    async def _api_request(self, Interface,endpoint: str, data: dict, header=None) -> dict | None:
-        header = header or {}      
+    async def _api_request(self, method:str,endpoint: str, data, header=None) -> dict | None:
         url = self._api_url + endpoint
-        data_dict = json.loads(json.dumps(data))
-        dump_data = urlencode(data_dict,doseq=True)
-        header.update({
-            "content-type": "application/x-www-form-urlencoded",
-            "Connection": "keep-alive",
-        })
-
-        if self._access_token is not None and self._access_token_type is not None:
-            header.update({
-                "Authorization": self._access_token_type+" "+self._access_token
-            })
         response: dict = {"error": "invalid client"}
-        data = {}
-        _LOGGER.info(f"url[{url}],dump_data[{dump_data}],headers[{header}]")
-        try:
-            if(Interface == "POST"):
-                async with self._session.post(url, headers=header, data=dump_data, timeout=10) as response:
-                    data = json.loads(await response.text())
-            elif(Interface == "GET"):
-                async with  self._session.get(url, headers=header, data=dump_data, timeout=10) as response:
-                    data = json.loads(await response.text())
-            elif(Interface == "PATCH"):
-                async with  self._session.patch(url, headers=header, data=dump_data, timeout=10) as response:
-                    data = json.loads(await response.text())
-            else:
-                async with  self._session.put(url, headers=header, data=dump_data, timeout=10) as response:
-                    data = json.loads(await response.text())
-            _LOGGER.info(f"data[{data}]")
-            return data
-        except Exception as e:
-            _LOGGER.warning(f"Taichuan cloud API error, url: {url}, data:{dump_data},error: {repr(e)}")
-        
-        return None
+        _LOGGER.info(f"url:{url},data:{data},header:{header}") 
+        async with asyncio.timeout(10):
+            try:
+                r = await self._session.request(method, url, headers=header, data=data, timeout=10)
+                raw = await r.read()
+                response = json.loads(raw)
+            except TimeoutError:
+                _LOGGER.error(f"api_request timeout!")
+        _LOGGER.info(f"response[{response}]")
+        return response
 
     async def login(self) -> bool:
         raise NotImplementedError()
@@ -103,6 +86,7 @@ class UCloud(TaichuanCloud):
             password=password,
             api_url=clouds[cloud_name]["api_url"]
         )
+        self._header={}
 
     async def login(self) -> bool:
         data = {
@@ -114,12 +98,23 @@ class UCloud(TaichuanCloud):
             "password": self._password 
         }
         
+        data_json = json.dumps(data)
+        jdata = f"[{data_json}]"
+        data_dict = json.loads(data_json)
+        dump_data = urlencode(data_dict,doseq=True)
+
+        self._header.update({
+            "Connection": "keep-alive",
+            "Content-Type":"application/x-www-form-urlencoded"
+        })
+ 
         if response := await self._api_request(
             "POST",
             endpoint="/connect/token",
-            data=data
+            data=dump_data,
+            header=self._header
         ):
-            if(response["access_token"]!=""):
+            if "access_token" in response:
                 self._access_token = response["access_token"]
                 self._access_token_type = response["token_type"]
                 self._expire_in = response["expires_in"] 
@@ -130,26 +125,44 @@ class UCloud(TaichuanCloud):
                 return False
 
     async def list_dev(self) -> dict:
-        devices = []
+        devices ={} 
+        self._header.update({
+            "Content-Type":"application/x-www-form-urlencoded",
+            "Authorization": self._access_token_type+" "+self._access_token
+        })
+        
         if response := await self._api_request(
             "GET",
             endpoint="/smarthome/api/v2/ctl/getDeviceSchemaList?num=C3201224000275&machineType=2003&timeout=6",
-            data={}
+            data={},
+            header=self._header
         ):
-            devices = {} 
             if(response["code"]==0):
                 devices_list = response["data"]["devices"]
                 for pdev in devices_list:
                     device_id = int(pdev["id"],10)
-                    devices[device_id] = pdev 
-                return devices
+                    device_type=pdev["devType"]
+                    device_name=pdev["name"]
+                    if(device_type==0x06):
+                        dev = device_selector(
+                            name = device_name,
+                            device_id = device_id,
+                            device_type= device_type
+                        )
+                        devices[device_id]=dev
+            return devices
 
     async def list_scene(self) -> dict:
         scenes = {}
+        self._header.update({
+            "Content-Type":"application/x-www-form-urlencoded",
+            "Authorization": self._access_token_type+" "+self._access_token
+        })
         if response := await self._api_request(
             "GET",
             endpoint="/smarthome/api/v2/ctl/getSceneInfoList?machineType=2003&num=C3201224000275&timeout=10",
-            data={}
+            data={},
+            header=self._header
         ):
             if(response["code"]==0):
                 scenes= response["data"]
@@ -157,20 +170,41 @@ class UCloud(TaichuanCloud):
         return scenes
 
     async def dev_opt(self,type:int,id:int,value: bool) -> bool:
-        if response :=await self._api_request(
-            "PATCH",
-            endpoint="https://ucloud.taichuan.net/smarthome/api/v2/ctl/ctrlDevice?num=C3201224000275&machineType=2003&timeout=10"+f"&devType={type}"+f"&id={id}",
-            data={"op":"replace","path":"/switch","value":{value}}
-        ):
-            if(response["code"]==0):
-                if(len(response["data"])==1):
-                    if((response["data"][0] =="true" and value == True) or (response["data"][0]=="false" and value ==False)):
-                        return True
-            return False
+        data = {
+            "op": "replace",
+            "path": "/switch",
+            "value": value 
+        }
+
+        data_json = json.dumps(data)
+        jdata = f"[{data_json}]"
+        data_dict = json.loads(data_json)
+        dump_data = urlencode(data_dict,doseq=True)
+        
+        self._header.update({
+            "Content-Type":"application/json-patch+json;charset=UTF-8",
+        })
+        async with asyncio.timeout(10):
+            try:
+                if response :=await self._api_request(
+                    "PATCH",
+                    endpoint="/smarthome/api/v2/ctl/ctrlDevice?num=C3201224000275&machineType=2003&timeout=10"+f"&devType={type}"+f"&id={id}",
+                    data=jdata,
+                    header=self._header
+                ):
+                    if "code" in response:
+                        if(response["code"]==0):
+                            if(len(response["data"])==1):
+                                if((response["data"][0] =="true" and value == True) or (response["data"][0]=="false" and value ==False)):
+                                    return True
+                    elif "error" in response:
+                        return False
+            except TimeoutError:
+                _LOGGER.error(f"cloud.dev_opt timeout!")
 
     async def list_home(self):
         if response := await self._api_request(
-            endpoint="https://ucloud.taichuan.net/smarthome/api/v2/ctl/getDeviceSchemaList",
+            endpoint="/smarthome/api/v2/ctl/getDeviceSchemaList",
             data={}
         ):
             homes = {}
@@ -203,6 +237,5 @@ def get_taichuan_cloud(cloud_name: str, session: ClientSession, username: str, p
             session=session,
             username=username,
             password=password,
-            dev_list=None
         )
     return cloud

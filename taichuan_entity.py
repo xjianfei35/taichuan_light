@@ -1,7 +1,7 @@
 from homeassistant.helpers.entity import Entity
 from .const import DOMAIN
 from .taichuan_device import TAICHUAN_DEVICES
-
+import asyncio
 import logging
 _LOGGER = logging.getLogger(__name__)
 
@@ -13,7 +13,9 @@ class TaichuanEntity(Entity):
         self._entity_key = entity_key
         self._device_name = self._device.device_name
         self._attr_unique_id = f"{self._device.device_name}{self._device.device_type}{self._device.device_id}" 
-        
+        #self._loop =  asyncio.new_event_loop()
+        #asyncio.set_event_loop(self._loop) 
+         
     @property
     def device(self):
         return self._device

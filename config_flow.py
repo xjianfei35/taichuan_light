@@ -1,4 +1,5 @@
 import voluptuous as vol
+from .hub import Taichuanhub
 import os
 import json
 try:
@@ -125,6 +126,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             if self.session is None:
                 self.session = async_create_clientsession(self.hass)
 
+
             if self.cloud is None:
                 self.cloud = get_taichuan_cloud(
                     session=self.session,
@@ -132,6 +134,8 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     username=user_input[CONF_ACCOUNT],
                     password=user_input[CONF_PASSWORD]
                 )
+            
+
 
             if await self.cloud.login():
                 self.account = {
@@ -139,7 +143,9 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     CONF_PASSWORD: user_input[CONF_PASSWORD],
                     CONF_SERVER:  SERVERS[user_input[CONF_SERVER]]
                 }
+
                 self._save_account(self.account)
+                #return self.async_create_entry(title=user_input[CONF_ACCOUNT],data=data_info)
                 return await self.async_step_discovery()
             else:
                 return await self.async_step_user(error="login_failed")
@@ -155,22 +161,10 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     async def async_step_discovery(self, user_input=None, error=None):
         if user_input is not None:
-            if user_input["action"] == "device":
-                self.devices = await self.cloud.list_dev()
-
-                if(len(self.devices)>0):
-                    return self.async_create_entry(title=user_input["action"],data=self.devices)
-                else:
-                    return await self.async_step_discovery(error="no device found")
-            
-            elif user_input["actioin"] == "scene":
-                scenes = self.cloud.list_scene()
-                self.scenes = self.cloud.list_scene()
-                self.available_scene ={}
-                if(len(self.available_scene)>0):
-                    return await self.async_create_entry(title=user_input["action"],data=self.available_scene)
-                else:
-                    return await self.async_step_discovery(error="no  scene found")
+            taichuan_hub = Taichuanhub(self.cloud)
+            data_info={}
+            data_info[user_input["action"]] = taichuan_hub
+            return self.async_create_entry(title=user_input["action"],data=data_info)
 
         return self.async_show_form(
             step_id="discovery",

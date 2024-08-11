@@ -44,7 +44,7 @@ class Taichuan06Device(TaichuanDevice):
     def get_attribute(self, attr):
         for oattr,ovalue in self._attributes.items():
             if(attr==oattr):
-                return self._attributes[attr]        
+                return ovalue        
     
     @property
     def effects(self):

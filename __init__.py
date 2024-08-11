@@ -1,5 +1,6 @@
 import logging
 import voluptuous as vol
+from .hub import Taichuanhub
 import homeassistant.helpers.config_validation as cv
 from .const import (
     DOMAIN,
@@ -60,22 +61,24 @@ async def update_listener(hass, config_entry):
 async def async_setup(hass: HomeAssistant, hass_config: dict):
     return True
 
+#async def async_setup(hass: HomeAssistant, hass_config: dict):
 
 async def async_setup_entry(hass: HomeAssistant, config_entry):
     if DOMAIN not in hass.data:
         hass.data[DOMAIN]={}
     if DEVICES not in hass.data[DOMAIN]:
         hass.data[DOMAIN][DEVICES] = {}
+
+    devices={}
+    type = None
+    taichuan_hub = None
+    for key,value in config_entry.data.items():
+        if(key=="device" or key=="scene"):
+            type = key
+            taichuan_hub = value
     
-    for device_id,device_json in config_entry.data.items():
-        dev_type = device_json["devType"]
-        dev_name = device_json["name"]
-        device = device_selector(
-            name = dev_name,
-            device_id=device_id,
-            device_type=dev_type,
-        ) 
-        hass.data[DOMAIN][DEVICES][device_id]=device
+    config_entry.data={}
+    hass.data.setdefault(DOMAIN,{})[config_entry.entry_id]=taichuan_hub   
 
     await hass.config_entries.async_forward_entry_setups(config_entry, ALL_PLATFORM)
     config_entry.add_update_listener(update_listener)

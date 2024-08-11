@@ -6,6 +6,7 @@ except ImportError:
 from enum import IntEnum
 from .security import LocalSecurity, MSGTYPE_HANDSHAKE_REQUEST, MSGTYPE_ENCRYPTED_REQUEST
 from .packet_builder import PacketBuilder
+from .cloud import UCloud
 from .message import (
     MessageType,
     MessageQuestCustom,

@@ -1,7 +1,6 @@
 from importlib import import_module
 #from homeassistant.helpers.importlib import async_import_module
 #from homeassistant.core import HomeAssistant.
-from ..core.cloud import UCloud
 def device_selector(
     name: str,
     device_id: int,
