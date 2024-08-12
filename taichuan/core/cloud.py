@@ -13,6 +13,7 @@ from ..devices.__init__ import device_selector
 from .security import CloudSecurity, MeijuCloudSecurity, MSmartCloudSecurity, TaichuanAirSecurity
 import asyncio
 import aiohttp
+import time
 _LOGGER = logging.getLogger(__name__)
 
 clouds = {
@@ -36,7 +37,8 @@ class TaichuanCloud:
         self._session = session
         self._access_token=None
         self._access_token_type=None
-        self._expire_in=None
+        self._expire_in=0
+        self._time_update_token=0
         self._scope=None
         
 
@@ -119,6 +121,7 @@ class UCloud(TaichuanCloud):
                 self._access_token_type = response["token_type"]
                 self._expire_in = response["expires_in"] 
                 self._scope = response["scope"]
+                self._time_update_token = int(time.time())
                 return True
             else:
                 _LOGGER.error(f"login error,data[{data}]")
@@ -197,8 +200,12 @@ class UCloud(TaichuanCloud):
                             if(len(response["data"])==1):
                                 if((response["data"][0] =="true" and value == True) or (response["data"][0]=="false" and value ==False)):
                                     return True
-                    elif "error" in response:
+                    elif "exp" in response:
+                        if(response["exp"]=="token expired"):
+                            res = await self.login()
                         return False
+                    else:
+                        _LOGGER(f"dev_opt timeout!")
             except TimeoutError:
                 _LOGGER.error(f"cloud.dev_opt timeout!")
 

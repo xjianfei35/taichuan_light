@@ -13,7 +13,7 @@ class Taichuanhub:
         #包含的场景
         self._devices = None 
         #包含的设备
-        self._scenes = None 
+        self._scenes = None
 
         self._loop = asyncio.get_event_loop()
         self._thread = threading.Thread(target=self.start_loop())
@@ -21,6 +21,11 @@ class Taichuanhub:
     def start_loop(self):
         #  运行事件循环， loop以参数的形式传递进来运行
         asyncio.set_event_loop(self._loop)
+        """ while True:
+            now_time_stamp = int(time.time())
+            if(now_time_stamp - (self._ucloud._expire_in+self._ucloud._time_update_token))<10:
+                self._ucloud.login()
+            time.sleep(3) """
             
     @property
     def loop(self):
