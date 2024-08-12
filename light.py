@@ -8,11 +8,37 @@ from .taichuan_device import X06Attributes
 from .taichuan.core.cloud import UCloud
 from .taichuan.devices.__init__ import device_selector
 import threading
+import json
 import asyncio
 from homeassistant.const import (
     Platform,
     CONF_DEVICE_ID,
     CONF_SWITCHES
+)
+from homeassistant.helpers.aiohttp_client import async_create_clientsession
+from homeassistant.util.json import load_json
+from .const import (
+    DOMAIN,
+    EXTRA_SENSOR,
+    EXTRA_CONTROL,
+    CONF_ACCOUNT,
+    CONF_SERVER,
+    CONF_KEY,
+    CONF_MODEL,
+    CONF_DEVTYPE,
+    CONF_REFRESH_INTERVAL
+)
+
+from homeassistant.const import (
+    CONF_NAME,
+    CONF_DEVICE,
+    CONF_TOKEN,
+    CONF_DEVICE_ID,
+    CONF_TYPE,
+    CONF_SWITCHES,
+    CONF_SENSORS,
+    CONF_CUSTOMIZE,
+    CONF_PASSWORD,
 )
 _LOGGER = logging.getLogger(__name__)
 from .const import (
@@ -20,8 +46,57 @@ from .const import (
     DEVICES,
 )
 
+clouds = {
+    "珠海U家": {
+        "class_name": "UCloud",
+        "api_url": "https://ucloud.taichuan.net",
+    }
+}
+from .taichuan.core.cloud import get_taichuan_cloud
+from .hub import Taichuanhub
+STORAGE_PATH = f".storage/{DOMAIN}"
+
+""" def load_account:
+        record_file = self.hass.config.path(f"{STORAGE_PATH}/account.json")
+        json_data = load_json(record_file, default={})
+        if CONF_ACCOUNT in json_data.keys():
+            json_data[CONF_PASSWORD] = bytes.fromhex(format((
+                    int(json_data[CONF_PASSWORD], 16) ^
+                    int(json_data[CONF_ACCOUNT].encode("utf-8").hex(), 16)), 'X')
+            ).decode('UTF-8')
+        return json_data
+ """    
+
+
+def load_account(hass):
+    record_file = hass.config.path(f"{STORAGE_PATH}/account.json")
+    json_data = load_json(record_file, default={})
+    if CONF_ACCOUNT in json_data.keys():
+        json_data[CONF_PASSWORD] = bytes.fromhex(format((
+            int(json_data[CONF_PASSWORD], 16) ^
+            int(json_data[CONF_ACCOUNT].encode("utf-8").hex(), 16)), 'X')
+        ).decode('UTF-8')
+        return json_data
+    
 async def async_setup_entry(hass, config_entry, async_add_entities):
     taichuan_hub = hass.data[DOMAIN][config_entry.entry_id]
+    if (taichuan_hub==None):
+        json_data = load_account(hass)
+        
+        cloud_name = json_data["server"]
+        username= json_data["account"]
+        password = json_data["password"]
+        session = async_create_clientsession(hass)
+        
+        cloud = get_taichuan_cloud(
+                    cloud_name,
+                    session,
+                    username,
+                    password,
+                )
+        taichuan_hub = Taichuanhub(cloud)
+        await taichuan_hub._ucloud.login()
+            
     devs = []
     devices = await taichuan_hub._ucloud.list_dev()
     for device_id,device in devices.items():

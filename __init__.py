@@ -61,6 +61,7 @@ async def update_listener(hass, config_entry):
 async def async_setup(hass: HomeAssistant, hass_config: dict):
     return True
 
+
 #async def async_setup(hass: HomeAssistant, hass_config: dict):
 
 async def async_setup_entry(hass: HomeAssistant, config_entry):

@@ -44,9 +44,7 @@ from .taichuan.devices import device_selector
 
 _LOGGER = logging.getLogger(__name__)
 
-#ADD_WAY = {"discovery": "Discover automatically", "manually": "Configure manually", "list": "List all appliances only"}
 ADD_WAY = {'device': 'scan devices', 'scene': 'scan scenes'}
-PROTOCOLS = {1: "V1", 2: "V2", 3: "V3"}
 STORAGE_PATH = f".storage/{DOMAIN}"
 
 SERVERS = {
@@ -56,12 +54,6 @@ SERVERS = {
     4: "兰州U家",
     5: "天翼平台",
 }
-
-PRESET_ACCOUNT = [
-    39182118275972017797890111985649342047468653967530949796945843010512,
-    29406100301096535908214728322278519471982973450672552249652548883645,
-    39182118275972017797890111985649342050088014265865102175083010656997
-]
 
 class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     available_device = []
@@ -134,8 +126,6 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     username=user_input[CONF_ACCOUNT],
                     password=user_input[CONF_PASSWORD]
                 )
-            
-
 
             if await self.cloud.login():
                 self.account = {

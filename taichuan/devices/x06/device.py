@@ -34,7 +34,7 @@ class Taichuan06Device(TaichuanDevice):
             attributes={
                 DeviceAttributes.power:False
             }
-            )
+        )
 
     def set_attribute(self, attr, value): 
         for oattr,ovalue in self._attributes.items():
