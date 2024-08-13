@@ -186,6 +186,7 @@ class UCloud(TaichuanCloud):
         
         self._header.update({
             "Content-Type":"application/json-patch+json;charset=UTF-8",
+            "Authorization": self._access_token_type+" "+self._access_token
         })
         async with asyncio.timeout(10):
             try:
