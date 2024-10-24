@@ -78,7 +78,7 @@ async def async_setup_entry(hass: HomeAssistant, config_entry):
             type = key
             taichuan_hub = value
     
-    config_entry.data={}
+    #config_entry.data={}
     hass.data.setdefault(DOMAIN,{})[config_entry.entry_id]=taichuan_hub   
 
     await hass.config_entries.async_forward_entry_setups(config_entry, ALL_PLATFORM)
