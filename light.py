@@ -96,7 +96,7 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
                 )
         taichuan_hub = Taichuanhub(cloud)
         await taichuan_hub._ucloud.login()
-            
+
     devs = []
     devices = await taichuan_hub._ucloud.list_dev()
     for device_id,device in devices.items():

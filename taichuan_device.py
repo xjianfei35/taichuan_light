@@ -68,4 +68,28 @@ TAICHUAN_DEVICES = {
             },
         }
     },
+    0x0A:{
+        "name": "curton",
+        "entities": {
+            "curton": {
+                "type": Platform.BUTTON,
+                "icon": "mdi:button",
+                "roomId": None,
+                "name": "Button",
+                "ctrlId": None
+            }
+        }
+    },
+    0x14:{
+        "name": "scene",
+        "entities": {
+            "curton": {
+                "type": Platform.BUTTON,
+                "icon": "mdi:button",
+                "roomId": None,
+                "name": "Button",
+                "ctrlId": None
+            }
+        }
+    }
 }

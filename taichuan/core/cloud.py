@@ -25,11 +25,11 @@ clouds = {
 
 class TaichuanCloud:
     def __init__(
-            self,
-            session: ClientSession,
-            username: str,
-            password: str,
-            api_url: str,
+        self,
+        session: ClientSession,
+        username: str,
+        password: str,
+        api_url: str,
     ):
         self._username= username 
         self._password = password
@@ -40,7 +40,6 @@ class TaichuanCloud:
         self._expire_in=0
         self._time_update_token=0
         self._scope=None
-        
 
     def _make_general_data(self):
         return {}
@@ -99,7 +98,7 @@ class UCloud(TaichuanCloud):
             "username": self._username,
             "password": self._password 
         }
-        
+
         data_json = json.dumps(data)
         jdata = f"[{data_json}]"
         data_dict = json.loads(data_json)
@@ -126,14 +125,21 @@ class UCloud(TaichuanCloud):
             else:
                 _LOGGER.error(f"login error,data[{data}]")
                 return False
+        return None
 
     async def list_dev(self) -> dict:
+        """_summary_.
+
+        Returns:
+            dict: _description_
+
+        """
         devices ={} 
         self._header.update({
             "Content-Type":"application/x-www-form-urlencoded",
             "Authorization": self._access_token_type+" "+self._access_token
         })
-        
+
         if response := await self._api_request(
             "GET",
             endpoint="/smarthome/api/v2/ctl/getDeviceSchemaList?num=C3201224000275&machineType=2003&timeout=6",
@@ -146,14 +152,14 @@ class UCloud(TaichuanCloud):
                     device_id = int(pdev["id"],10)
                     device_type=pdev["devType"]
                     device_name=pdev["name"]
-                    if(device_type==0x06):
-                        dev = device_selector(
-                            name = device_name,
-                            device_id = device_id,
-                            device_type= device_type
-                        )
-                        devices[device_id]=dev
+                    dev = device_selector(
+                        name = device_name,
+                        device_id = device_id,
+                        device_type= device_type
+                    )
+                    devices[device_id]=dev
             return devices
+        return None
 
     async def list_scene(self) -> dict:
         scenes = {}
@@ -176,14 +182,14 @@ class UCloud(TaichuanCloud):
         data = {
             "op": "replace",
             "path": "/switch",
-            "value": value 
+            "value": value
         }
 
         data_json = json.dumps(data)
         jdata = f"[{data_json}]"
-        data_dict = json.loads(data_json)
-        dump_data = urlencode(data_dict,doseq=True)
-        
+        #data_dict = json.loads(data_json)
+        #dump_data = urlencode(data_dict,doseq=True)
+
         self._header.update({
             "Content-Type":"application/json-patch+json;charset=UTF-8",
             "Authorization": self._access_token_type+" "+self._access_token
@@ -203,12 +209,12 @@ class UCloud(TaichuanCloud):
                                     return True
                     elif "exp" in response:
                         if(response["exp"]=="token expired"):
-                            res = await self.login()
+                            await self.login()
                         return False
                     else:
-                        _LOGGER(f"dev_opt timeout!")
+                        _LOGGER("dev_opt timeout!")
             except TimeoutError:
-                _LOGGER.error(f"cloud.dev_opt timeout!")
+                _LOGGER.error("cloud.dev_opt timeout!")
 
     async def list_home(self):
         if response := await self._api_request(
@@ -236,8 +242,11 @@ class UCloud(TaichuanCloud):
                     "properties": device.get("properties")
                 }
                 return device_info
+        return None
 
 def get_taichuan_cloud(cloud_name: str, session: ClientSession, username: str, password: str) -> TaichuanCloud | None:
+    """
+    """  # noqa: D200, D419
     cloud = None
     if cloud_name in clouds.keys():
         cloud = globals()[clouds[cloud_name]["class_name"]](

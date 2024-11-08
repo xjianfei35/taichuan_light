@@ -62,28 +62,23 @@ async def async_setup(hass: HomeAssistant, hass_config: dict):
     return True
 
 
-#async def async_setup(hass: HomeAssistant, hass_config: dict):
-
-async def async_setup_entry(hass: HomeAssistant, config_entry):
+async def async_setup_entry(hass: HomeAssistant, config_entry):  # noqa: D103
     if DOMAIN not in hass.data:
         hass.data[DOMAIN]={}
     if DEVICES not in hass.data[DOMAIN]:
         hass.data[DOMAIN][DEVICES] = {}
 
-    devices={}
-    type = None
     taichuan_hub = None
     for key,value in config_entry.data.items():
-        if(key=="device" or key=="scene"):
-            type = key
+        if(key in ("device","scene")):
             taichuan_hub = value
-    
+
     #config_entry.data={}
-    hass.data.setdefault(DOMAIN,{})[config_entry.entry_id]=taichuan_hub   
+    hass.data.setdefault(DOMAIN,{})[config_entry.entry_id]=taichuan_hub
 
     await hass.config_entries.async_forward_entry_setups(config_entry, ALL_PLATFORM)
     config_entry.add_update_listener(update_listener)
-    
+
     return True
 
 

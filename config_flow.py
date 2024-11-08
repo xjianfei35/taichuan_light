@@ -34,7 +34,7 @@ from homeassistant.const import (
 )
 import homeassistant.helpers.config_validation as cv
 from homeassistant.helpers.aiohttp_client import async_create_clientsession
-from .taichuan.core.discover import discover
+#from .taichuan.core.del.discover import discover
 from .taichuan.core.cloud import get_taichuan_cloud
 from .taichuan.core.cloud import UCloud
 from .taichuan.core.device import TaichuanDevice
@@ -114,10 +114,18 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         return False
 
     async def async_step_user(self, user_input=None, error=None):
+        """_summary_
+        Args:
+            user_input (_type_, optional): _description_. Defaults to None.
+            error (_type_, optional): _description_. Defaults to None.
+
+        Returns:
+            _type_: _description_
+
+        """  # noqa: D205
         if user_input is not None:
             if self.session is None:
                 self.session = async_create_clientsession(self.hass)
-
 
             if self.cloud is None:
                 self.cloud = get_taichuan_cloud(
@@ -137,8 +145,6 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 self._save_account(self.account)
                 #return self.async_create_entry(title=user_input[CONF_ACCOUNT],data=data_info)
                 return await self.async_step_discovery()
-            else:
-                return await self.async_step_user(error="login_failed")
         return self.async_show_form(
             step_id="user",
             data_schema=vol.Schema({
@@ -150,6 +156,16 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         )
 
     async def async_step_discovery(self, user_input=None, error=None):
+        """_summary_.
+
+        Args:
+            user_input (_type_, optional): _description_. Defaults to None.
+            error (_type_, optional): _description_. Defaults to None.
+
+        Returns:
+            _type_: _description_
+
+        """
         if user_input is not None:
             taichuan_hub = Taichuanhub(self.cloud)
             data_info={}
@@ -167,6 +183,15 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     @staticmethod
     @callback
     def async_get_options_flow(config_entry):
+        """_summary_.
+
+        Args:
+            config_entry (_type_): _description_
+
+        Returns:
+            _type_: _description_
+
+        """
         return OptionsFlowHandler(config_entry)
 
 

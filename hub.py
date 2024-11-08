@@ -5,13 +5,22 @@ import time
 import logging
 _LOGGER = logging.getLogger(__name__)
 class Taichuanhub:
+    """_summary_."""
+
     def __init__(
        self,
-       cloud: UCloud, 
+       cloud: UCloud
     ):
-        self._ucloud = cloud 
+        """_summary_.
+
+        Args:
+            cloud (UCloud): _description_
+
+        """
+        self._ucloud = cloud
         #包含的场景
-        self._devices = None 
+        self._devices = None
+
         #包含的设备
         self._scenes = None
 
@@ -20,34 +29,64 @@ class Taichuanhub:
 
     def start_loop(self):
         #  运行事件循环， loop以参数的形式传递进来运行
+        """
+
+        """  # noqa: D419
         asyncio.set_event_loop(self._loop)
-        """ while True:
-            now_time_stamp = int(time.time())
-            if(now_time_stamp - (self._ucloud._expire_in+self._ucloud._time_update_token))<10:
-                self._ucloud.login()
-            time.sleep(3) """
-            
     @property
     def loop(self):
-        return self._loop 
-    
+        """_summary_.
+
+        Returns:
+            _type_: _description_
+
+        """
+        return self._loop
+
     @property
     def ucloud(self):
+        """_summary_.
+
+        Returns:
+            _type_: _description_
+
+        """
         return self._ucloud
 
     @property 
     async def devices(self):
+        """_summary_.
+
+        Returns:
+            _type_: _description_
+
+        """
         self._devices = await self._ucloud.list_dev()
         return self._devices
-    
-    @property 
+
+    @property
     async def scenes(self):
+        """_summary_.
+
+        Returns:
+            _type_: _description_
+
+        """
         self._scenes=await self._ucloud.list_scene()
         return self._scenes
-    
+
     @property
     async def reflesh_token(self):
+        """_summary_."""
         await self.ucloud.login
 
     async def dev_opt(self,type,id,value:bool):
+        """_summary_.
+
+        Args:
+            type (_type_): _description_
+            id (_type_): _description_
+            value (bool): _description_
+
+        """
         await self._ucloud.dev_opt(type,id,value)
