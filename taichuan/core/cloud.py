@@ -80,6 +80,9 @@ class UCloud(TaichuanCloud):
             session: ClientSession,
             username: str,
             password: str,
+            access_token_type: str = None,
+            access_token: str = None,
+            expire_in: int = 0
     ):
         super().__init__(
             session=session,
@@ -87,7 +90,10 @@ class UCloud(TaichuanCloud):
             password=password,
             api_url=clouds[cloud_name]["api_url"]
         )
-        self._header={}
+        self._header = {}
+        self._access_token_type = access_token_type
+        self._access_token = access_token
+        self._expire_in = expire_in
 
     async def login(self) -> bool:
         data = {
@@ -244,7 +250,7 @@ class UCloud(TaichuanCloud):
                 return device_info
         return None
 
-def get_taichuan_cloud(cloud_name: str, session: ClientSession, username: str, password: str) -> TaichuanCloud | None:
+def get_taichuan_cloud(cloud_name: str, session: ClientSession, username: str, password: str,access_token_type:str,access_token:str,expire_in:int) -> TaichuanCloud | None:
     """
     """  # noqa: D200, D419
     cloud = None
@@ -254,5 +260,8 @@ def get_taichuan_cloud(cloud_name: str, session: ClientSession, username: str, p
             session=session,
             username=username,
             password=password,
+            access_token_type=access_token_type,
+            access_token=access_token,
+            expire_in=expire_in
         )
     return cloud

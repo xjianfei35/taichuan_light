@@ -132,7 +132,10 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     session=self.session,
                     cloud_name=SERVERS[user_input[CONF_SERVER]],
                     username=user_input[CONF_ACCOUNT],
-                    password=user_input[CONF_PASSWORD]
+                    password=user_input[CONF_PASSWORD],
+                    access_token=None,
+                    access_token_type=None,
+                    expire_in=0
                 )
 
             if await self.cloud.login():
@@ -172,7 +175,10 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 "action": user_input["action"],
                 "account": self.account[CONF_ACCOUNT],
                 "password": self.account[CONF_PASSWORD],
-                "server": self.account[CONF_SERVER]
+                "server": self.account[CONF_SERVER],
+                "access_token_type": self.cloud.access_token_type,
+                "access_token": self.cloud.access_token,
+                "expire_in": self.cloud.expire_in
             }
             return self.async_create_entry(title=user_input["action"], data=data_info)
 

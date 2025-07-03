@@ -78,7 +78,10 @@ async def async_setup_entry(hass: HomeAssistant, config_entry):  # noqa: D103
             session=session,
             cloud_name=config_entry.data.get("server"),
             username=config_entry.data.get("account"),
-            password=config_entry.data.get("password")
+            password=config_entry.data.get("password"),
+            access_token_type=config_entry.data.get("access_token_type"),
+            access_token=config_entry.data.get("access_token"),
+            expire_in=config_entry.data.get("expire_in"),
         )
         
         # 创建Taichuanhub实例

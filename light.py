@@ -17,6 +17,7 @@ from .taichuan.devices.__init__ import device_selector
 import threading
 import json
 import asyncio
+import logging
 from homeassistant.const import (
     Platform,
     CONF_DEVICE_ID,
@@ -87,12 +88,15 @@ def load_account(hass):
     
 async def async_setup_entry(hass, config_entry, async_add_entities):
     taichuan_hub = hass.data[DOMAIN][config_entry.entry_id]
-    if (taichuan_hub==None):
+    if taichuan_hub is None:
         json_data = load_account(hass)
-        
-        cloud_name = json_data["server"]
-        username= json_data["account"]
-        password = json_data["password"]
+        if not json_data or "server" not in json_data or "account" not in json_data or "password" not in json_data:
+            _LOGGER.error("Missing required account data in account.json")
+            return False
+            
+        cloud_name = json_data.get("server", "")
+        username = json_data.get("account", "")
+        password = json_data.get("password", "")
         session = async_create_clientsession(hass)
         
         cloud = get_taichuan_cloud(
