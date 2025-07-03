@@ -152,7 +152,19 @@ class UCloud(TaichuanCloud):
             data={},
             header=self._header
         ):
-            if(response["code"]==0):
+            if not response:
+                _LOGGER.error("Empty response from device list API")
+                return None
+                
+            if "error" in response:
+                _LOGGER.error(f"API error response: {response}")
+                return None
+                
+            if "code" not in response:
+                _LOGGER.error(f"Unexpected API response format: {response}")
+                return None
+                
+            if response["code"] == 0 and "data" in response and "devices" in response["data"]:
                 devices_list = response["data"]["devices"]
                 for pdev in devices_list:
                     device_id = int(pdev["id"],10)
@@ -164,6 +176,8 @@ class UCloud(TaichuanCloud):
                         device_type= device_type
                     )
                     devices[device_id]=dev
+            else:
+                _LOGGER.error(f"API returned non-zero code: {response}")
             return devices
         return None
 

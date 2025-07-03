@@ -58,11 +58,18 @@ class Taichuanhub:
         """获取设备列表.
 
         Returns:
-            list: 设备列表
+            dict: 设备字典，如果出错则返回空字典
 
         """
-        self._devices = await self._ucloud.list_dev()
-        return self._devices
+        try:
+            self._devices = await self._ucloud.list_dev()
+            if self._devices is None:
+                _LOGGER.error("Failed to get devices list: API returned None")
+                return {}
+            return self._devices
+        except Exception as e:
+            _LOGGER.error(f"Error getting devices list: {str(e)}")
+            return {}
 
     async def get_scenes(self):
         """获取场景列表.
