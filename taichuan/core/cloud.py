@@ -264,6 +264,18 @@ class UCloud(TaichuanCloud):
                 return device_info
         return None
 
+    @property
+    def access_token(self):
+        return self._access_token
+
+    @property
+    def access_token_type(self):
+        return self._access_token_type
+
+    @property
+    def expire_in(self):
+        return self._expire_in
+
 def get_taichuan_cloud(cloud_name: str, session: ClientSession, username: str, password: str,access_token_type:str,access_token:str,expire_in:int) -> TaichuanCloud | None:
     """
     """  # noqa: D200, D419
