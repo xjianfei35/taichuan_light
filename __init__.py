@@ -2,6 +2,8 @@ import logging
 import voluptuous as vol
 from .hub import Taichuanhub
 import homeassistant.helpers.config_validation as cv
+from homeassistant.helpers.aiohttp_client import async_create_clientsession
+from .taichuan.core.cloud import get_taichuan_cloud
 from .const import (
     DOMAIN,
     CONF_ACCOUNT,
@@ -68,13 +70,22 @@ async def async_setup_entry(hass: HomeAssistant, config_entry):  # noqa: D103
     if DEVICES not in hass.data[DOMAIN]:
         hass.data[DOMAIN][DEVICES] = {}
 
-    taichuan_hub = None
-    for key,value in config_entry.data.items():
-        if(key in ("device","scene")):
-            taichuan_hub = value
-
-    #config_entry.data={}
-    hass.data.setdefault(DOMAIN,{})[config_entry.entry_id]=taichuan_hub
+    # 使用配置条目中的信息创建Taichuanhub实例
+    action = config_entry.data.get("action")
+    if action in ("device", "scene"):
+        session = async_create_clientsession(hass)
+        cloud = get_taichuan_cloud(
+            session=session,
+            cloud_name=config_entry.data.get("server"),
+            username=config_entry.data.get("account"),
+            password=config_entry.data.get("password")
+        )
+        
+        # 创建Taichuanhub实例
+        taichuan_hub = Taichuanhub(cloud)
+        
+        # 存储实例到hass.data中
+        hass.data.setdefault(DOMAIN, {})[config_entry.entry_id] = taichuan_hub
 
     await hass.config_entries.async_forward_entry_setups(config_entry, ALL_PLATFORM)
     config_entry.add_update_listener(update_listener)

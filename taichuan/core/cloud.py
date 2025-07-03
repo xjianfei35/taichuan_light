@@ -212,7 +212,7 @@ class UCloud(TaichuanCloud):
                             await self.login()
                         return False
                     else:
-                        _LOGGER("dev_opt timeout!")
+                        _LOGGER.error("dev_opt timeout!")
             except TimeoutError:
                 _LOGGER.error("cloud.dev_opt timeout!")
 

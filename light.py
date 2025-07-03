@@ -3,7 +3,14 @@ from .taichuan.core.device import TaichuanDevice
 from .taichuan.devices.x06.device import Taichuan06Device
 from .taichuan_device import TAICHUAN_DEVICES
 from homeassistant.helpers.entity import ToggleEntity
-from homeassistant.components.light import *
+from homeassistant.components.light import (
+    LightEntity,
+    ColorMode,
+    LightEntityFeature,
+    ATTR_COLOR_TEMP_KELVIN,
+    ATTR_MIN_COLOR_TEMP_KELVIN,
+    ATTR_MAX_COLOR_TEMP_KELVIN,
+)
 from .taichuan_device import X06Attributes
 from .taichuan.core.cloud import UCloud
 from .taichuan.devices.__init__ import device_selector
@@ -98,12 +105,13 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
         await taichuan_hub._ucloud.login()
 
     devs = []
-    devices = await taichuan_hub._ucloud.list_dev()
+    devices = await taichuan_hub.get_devices()
     for device_id,device in devices.items():
-        if(device.device_type==6):
-            for entity_key, config in TAICHUAN_DEVICES[device.device_type]["entities"].items():
+        if device is not None and device.device_type in TAICHUAN_DEVICES:
+            device_config = TAICHUAN_DEVICES[device.device_type]
+            for entity_key, config in device_config.get("entities", {}).items():
                 if config["type"] == Platform.LIGHT:
-                    dev = TaichuanLight(device,entity_key,taichuan_hub)
+                    dev = TaichuanLight(device, entity_key, taichuan_hub)
                     devs.append(dev)
     
     async_add_entities(devs)
@@ -121,22 +129,20 @@ class TaichuanLight(TaichuanEntity,LightEntity):
 
     @property
     def supported_features(self) -> LightEntityFeature:
-        supported_features = LightEntityFeature(SUPPORT_EFFECT)
-        return supported_features
+        return LightEntityFeature.EFFECT
 
     @property
-    def supported_color_modes(self)->ColorMode:
-        supported_color_modes = ColorMode(COLOR_MODE_ONOFF)
-        return supported_color_modes
+    def supported_color_modes(self) -> set[ColorMode]:
+        return {ColorMode.ONOFF}
 
-    def turn_on(self):
+    async def async_turn_on(self, **kwargs):
         if not self.is_on:
             self._device.set_attribute(attr=X06Attributes.power, value=True)
-            res = asyncio.run_coroutine_threadsafe(self._cloud.dev_opt(self._device.device_type,self._device.device_id,True),self._cloud.loop)
+            await self._cloud.dev_opt(self._device.device_type, self._device.device_id, True)
 
-    def turn_off(self):
+    async def async_turn_off(self, **kwargs):
         self._device.set_attribute(attr=X06Attributes.power, value=False)
-        res = asyncio.run_coroutine_threadsafe(self._cloud.dev_opt(self._device.device_type,self._device.device_id,False),self._cloud.loop)
+        await self._cloud.dev_opt(self._device.device_type, self._device.device_id, False)
 
     def update_state(self, status):
         try:

@@ -25,7 +25,8 @@ class Taichuanhub:
         self._scenes = None
 
         self._loop = asyncio.get_event_loop()
-        self._thread = threading.Thread(target=self.start_loop())
+        self._thread = threading.Thread(target=self.start_loop)
+        self._thread.start()
 
     def start_loop(self):
         #  运行事件循环， loop以参数的形式传递进来运行
@@ -53,32 +54,29 @@ class Taichuanhub:
         """
         return self._ucloud
 
-    @property 
-    async def devices(self):
-        """_summary_.
+    async def get_devices(self):
+        """获取设备列表.
 
         Returns:
-            _type_: _description_
+            list: 设备列表
 
         """
         self._devices = await self._ucloud.list_dev()
         return self._devices
 
-    @property
-    async def scenes(self):
-        """_summary_.
+    async def get_scenes(self):
+        """获取场景列表.
 
         Returns:
-            _type_: _description_
+            list: 场景列表
 
         """
-        self._scenes=await self._ucloud.list_scene()
+        self._scenes = await self._ucloud.list_scene()
         return self._scenes
 
-    @property
     async def reflesh_token(self):
-        """_summary_."""
-        await self.ucloud.login
+        """刷新令牌."""
+        await self.ucloud.login()
 
     async def dev_opt(self,type,id,value:bool):
         """_summary_.

@@ -167,10 +167,14 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         """
         if user_input is not None:
-            taichuan_hub = Taichuanhub(self.cloud)
-            data_info={}
-            data_info[user_input["action"]] = taichuan_hub
-            return self.async_create_entry(title=user_input["action"],data=data_info)
+            # 只存储必要的配置信息，而不是Taichuanhub实例
+            data_info = {
+                "action": user_input["action"],
+                "account": self.account[CONF_ACCOUNT],
+                "password": self.account[CONF_PASSWORD],
+                "server": self.account[CONF_SERVER]
+            }
+            return self.async_create_entry(title=user_input["action"], data=data_info)
 
         return self.async_show_form(
             step_id="discovery",
